@@ -1,0 +1,33 @@
+#ifndef PMSENSITIVEDETECTOR_HH
+#define PMSENSITIVEDETECTOR_HH
+
+#include "G4VSensitiveDetector.hh"
+
+#include "G4RunManager.hh"
+#include "G4AnalysisManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
+#include "PMRunAction.hh"
+
+#include <fstream>
+#include <iostream>
+
+
+class PMSensitiveDetector : public G4VSensitiveDetector
+{
+public:
+    PMSensitiveDetector(G4String);
+    ~PMSensitiveDetector();
+    
+
+private:
+    virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
+    
+    virtual void Initialize(G4HCofThisEvent*) override;
+    virtual void EndOfEvent(G4HCofThisEvent *) override;
+
+    G4double fTotalEnergyDeposited;
+    std::ofstream outFile;
+};
+
+#endif
