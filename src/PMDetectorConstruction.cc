@@ -23,7 +23,7 @@ G4VPhysicalVolume *PMDetectorConstruction::Construct()
 
     G4NistManager *nist  = G4NistManager::Instance();
     G4Material *worldMat = nist->FindOrBuildMaterial("Galactic");
-    G4Material *leadMat = nist->FindOrBuildMaterial("G4_Al");
+    G4Material *leadMat = nist->FindOrBuildMaterial("G4_Al");       //G4_Al->G4_Cu      для замены алюминия на медь
     G4Material *detMat = nist->FindOrBuildMaterial("G4_SODIUM_IODIDE");
 
 
@@ -35,7 +35,7 @@ G4VPhysicalVolume *PMDetectorConstruction::Construct()
     G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
     G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0);
 
-    G4double leadThickness = 100. * mm;
+    G4double leadThickness = 100. * mm;             //изменение толщины пластины (текущая толщина 100 мкм)
     G4double leadSize = 10. * cm;
     G4Box *solidLead = new G4Box("solidLead", 0.5 * leadSize, 0.5 * leadSize, 0.001 * leadThickness);
     G4LogicalVolume *logicLead = new G4LogicalVolume(solidLead, leadMat, "logicLead");

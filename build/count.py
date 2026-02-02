@@ -27,4 +27,5 @@ if __name__ == "__main__":
     count = count_phrase_in_file(filename, phrase_to_search)
     
     if count is not None:
-        print(f"Фраза '{phrase_to_search}' найдена {count} раз(а)")
+        print(f"Пройденных частиц: {count}")
+        #print(f"Фраза '{phrase_to_search}' найдена {count} раз(а)")
