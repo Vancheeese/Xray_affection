@@ -1,0 +1,24 @@
+Material: G4_Al
+Thickness: 2 mm
+Pass photons: 82138
+Energy: 50 keV
+Pass photons: 168179
+Energy: 60 keV
+Pass photons: 256393
+Energy: 70 keV
+Pass photons: 346362
+Energy: 80 keV
+Pass photons: 437008
+Energy: 90 keV
+Pass photons: 528404
+Energy: 100 keV
+Pass photons: 619983
+Energy: 110 keV
+Pass photons: 712144
+Energy: 120 keV
+Pass photons: 804639
+Energy: 130 keV
+Pass photons: 897347
+Energy: 140 keV
+Pass photons: 990141
+Energy: 150 keV
