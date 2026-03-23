@@ -595,4 +595,6 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/new/include/PMRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Run.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicalConstants.hh
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicalConstants.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Tubs.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Tubs.icc

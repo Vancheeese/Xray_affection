@@ -30,7 +30,7 @@ PMPrimaryGenerator::PMPrimaryGenerator()
 
     fParticleGun->SetParticlePosition(pos);
     fParticleGun->SetParticleMomentumDirection(mom);
-    fParticleGun->SetParticleEnergy(70. * keV);    
+    fParticleGun->SetParticleEnergy(100. * keV);    
     fParticleGun->SetParticleDefinition(particle);
     
 }

@@ -1,7 +1,8 @@
 #include "PMDetectorConstruction.hh"
 #include "G4PhysicalConstants.hh"
+#include "G4Tubs.hh"
 
-G4double leadThickness = 2000. * um; //изменение толщины пластины в мкм
+G4double leadThickness = 100. * um; //изменение толщины пластины в мкм
 G4String material = "G4_Al"; //Объявление материала
 
 PMDetectorConstruction::PMDetectorConstruction()
@@ -37,7 +38,7 @@ G4VPhysicalVolume *PMDetectorConstruction::Construct()
     G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
     G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0);
            
-    G4double leadSize = 10. * cm;
+    G4double leadSize = 10.0 * cm;
     G4Box *solidLead = new G4Box("solidLead", 0.5 * leadSize, 0.5 * leadSize, 0.5 * leadThickness);
     G4LogicalVolume *logicLead = new G4LogicalVolume(solidLead, leadMat, "logicLead");
     G4VPhysicalVolume *physLead = new G4PVPlacement(0, G4ThreeVector(0., 0., 10. * cm), logicLead, "physLead", logicWorld, false, checkOverlaps);
@@ -46,7 +47,7 @@ G4VPhysicalVolume *PMDetectorConstruction::Construct()
     leadVisAtt->SetForceSolid(true);
     logicLead->SetVisAttributes(leadVisAtt);
 
-    G4double detectorSize = 10.0 * cm;
+    
 
    /* G4Box *solidDetector = new G4Box("solidDetector", 0.005*m, 0.005*m, 0.001*m);
     logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
@@ -59,10 +60,31 @@ G4VPhysicalVolume *PMDetectorConstruction::Construct()
             }
 
         }*/
+    
+    G4double detectorRadius = 50.0 * cm;
+    G4double detectorThickness = 0.01 * m; // или 1.0 * cm, если нужно
 
-    G4Box* solidDetector = new G4Box("solidDetector", 0.25 * m, 0.25 * m, 0.01 * m);
-    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
-    G4VPhysicalVolume* physDetector = new G4PVPlacement(0, G4ThreeVector(0 * m , 0 * m, 0.19 * m), logicDetector, "physDetector", logicWorld, false, 1, checkOverlaps);
+    // Используем G4Tubs для создания цилиндрического (дискообразного) объема
+    G4Tubs* solidDetector = new G4Tubs("solidDetector",
+        0.0,                      // внутренний радиус
+        detectorRadius,           // внешний радиус
+        detectorThickness / 2.0,    // половина толщины
+        0.0,                      // начальный угол
+        360.0 * deg);             // полный угол
+
+    logicDetector = new G4LogicalVolume(solidDetector,
+        worldMat,                  // используйте материал детектора, если нужен другой
+        "logicDetector");
+
+    // Размещение детектора
+    G4VPhysicalVolume* physDetector = new G4PVPlacement(0,
+        G4ThreeVector(0., 0., 0.19 * m),
+        logicDetector,
+        "physDetector",
+        logicWorld,
+        false,
+        1,
+        checkOverlaps);
 
     return physWorld;
 }
