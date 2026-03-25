@@ -19,27 +19,3 @@ PMPhysicsList::PMPhysicsList() : G4VModularPhysicsList()
 PMPhysicsList::~PMPhysicsList()
 {
 }
-
-void PMPhysicsList::ConstructProcess()
-{
-    G4VModularPhysicsList::ConstructProcess();
-
-    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleTable::G4PTblDicIterator* theParticleIterator = particleTable->GetIterator();
-
-    theParticleIterator->reset();
-    while ((*theParticleIterator)())
-    {
-        G4ParticleDefinition* particle = theParticleIterator->value();
-        G4ProcessManager* pmanager = particle->GetProcessManager();
-        G4String particleName = particle->GetParticleName();
-
-        if (particleName == "gamma")
-        {
-            G4ComptonScattering* compt = new G4ComptonScattering();
-            compt->SetEmModel(new G4KleinNishinaModel());
-            pmanager->AddDiscreteProcess(compt);
-            break;  // Только один гамма
-        }
-    }
-}

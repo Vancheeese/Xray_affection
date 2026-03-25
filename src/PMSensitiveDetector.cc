@@ -42,7 +42,7 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
         compton_energy = E0 / (1 + (E0 / m_e_c2) * (1 - cos(angle)));
 
         std::stringstream ss;
-        if ( energy !=0.1 && energy> compton_energy/1000-0.004 && energy < compton_energy / 1000 + 0.004) {
+        if ( energy !=0.1 && energy> compton_energy/1000-0.003 && energy < compton_energy / 1000 + 0.003) {
         ss << "Particle energy: " << energy * 1000 << " keV";
   
         
@@ -59,10 +59,10 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
         }
          
            // track->SetTrackStatus(fStopAndKill);
-        if (track->GetKineticEnergy() > 1 * keV && track->GetMomentumDirection().z() > 0.999) {  // Ёнерги€ > порога
-            photon_count++;  // √лобальный счЄтчик или в HitsCollection
-            track->SetTrackStatus(fStopAndKill);  // ќпционально: поглотить
-        }
+        //if (track->GetKineticEnergy() > 1 * keV && track->GetMomentumDirection().z() > 0.999) {  // Ёнерги€ > порога
+        //    photon_count++;  // √лобальный счЄтчик или в HitsCollection
+        //    track->SetTrackStatus(fStopAndKill);  // ќпционально: поглотить
+        //}
 
         return true;
 }

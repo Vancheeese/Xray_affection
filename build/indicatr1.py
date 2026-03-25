@@ -141,17 +141,15 @@ print(f"\nСреднее отношение: {mean_ratio:.3f} ± {std_ratio:.3f}
 print(f"Относительный разброс: {std_ratio/mean_ratio*100:.1f}%")
 
 # ============================================
-# ПОСТРОЕНИЕ ГРАФИКОВ (3 графика)
+# ПОСТРОЕНИЕ ГРАФИКОВ (2 графика)
 # ============================================
-plt.figure(figsize=(14, 5))
+plt.figure(figsize=(12, 5))
 
 # График 1: Сравнение эксперимента с теорией
-plt.subplot(1, 3, 1)
+plt.subplot(1, 2, 1)
 plt.errorbar(bin_centers_deg, dsigma_dOmega_exp, yerr=dsigma_err, 
              fmt='o', color='red', capsize=3, markersize=8, label='Эксперимент')
 plt.plot(theta_smooth_deg, dsigma_smooth, 'b-', linewidth=2, label='Теория')
-plt.plot(theta_smooth_deg, dsigma_smooth * mean_ratio, 'g--', linewidth=2, 
-         label=f'Теория × {mean_ratio:.3f}')
 plt.xlabel('Угол θ (градусы)')
 plt.ylabel('dσ/dΩ (см²/ср)')
 plt.title(f'Сравнение с теорией ({thickness_um:.0f} мкм Al)')
@@ -159,25 +157,8 @@ plt.grid(True, alpha=0.3)
 plt.legend()
 plt.xlim(0, 80)
 
-# График 2: Отношение эксп/теор по бинам
-plt.subplot(1, 3, 2)
-plt.bar(bin_centers_deg, ratio_per_bin, width=bin_widths_deg[0]*0.8, 
-        alpha=0.7, edgecolor='black', color='skyblue')
-plt.axhline(y=1.0, color='b', linestyle='-', linewidth=2, label='Теория')
-plt.axhline(y=mean_ratio, color='r', linestyle='--', linewidth=2, 
-            label=f'Среднее = {mean_ratio:.3f}')
-plt.fill_between([0, 80], mean_ratio - std_ratio, mean_ratio + std_ratio, 
-                 alpha=0.2, color='red', label=f'±1σ = ±{std_ratio:.3f}')
-plt.xlabel('Угол θ (градусы)')
-plt.ylabel('Отношение эксп/теор')
-plt.title('Отношение эксперимента к теории')
-plt.grid(True, alpha=0.3)
-plt.legend()
-plt.xlim(0, 80)
-plt.ylim(0, 2.5)
-
-# График 3: Энергия vs угол
-plt.subplot(1, 3, 3)
+# График 2: Энергия vs угол
+plt.subplot(1, 2, 2)
 # Берем случайные 5000 точек для наглядности
 indices = np.random.choice(len(energies), min(5000, len(energies)), replace=False)
 plt.scatter(angles_deg[indices], energies[indices], s=1, alpha=0.5, c='blue')

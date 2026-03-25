@@ -9,8 +9,7 @@ public:
     PMPhysicsList();
     ~PMPhysicsList();
 
-    // ќбъ€вл€ем метод
-    virtual void ConstructProcess() override;
+
 };
 
 #endif
