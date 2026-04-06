@@ -66,7 +66,7 @@ void PMRunAction::EndOfRunAction(const G4Run *run)
                 stuff << "Material: " << material << std::endl;
                 stuff << "Thickness: " << leadThickness << " mm" << std::endl;
             }
-            stuff << "Pass photons: " << photon_count << std::endl;
+            //stuff << "Pass photons: " << photon_count << std::endl;
             stuff << "Energy: " << energy*1000 << " keV" << std::endl;
 
             stuff.flush();

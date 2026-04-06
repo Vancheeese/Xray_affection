@@ -1,7 +1,7 @@
 #include "PMPrimaryGenerator.hh"
 
 
-G4double energy = 0.;
+G4double energy = 8.;
 
 PMPrimaryGenerator::PMPrimaryGenerator()
 {
@@ -30,7 +30,7 @@ PMPrimaryGenerator::PMPrimaryGenerator()
 
     fParticleGun->SetParticlePosition(pos);
     fParticleGun->SetParticleMomentumDirection(mom);
-    fParticleGun->SetParticleEnergy(70. * keV);    
+    fParticleGun->SetParticleEnergy(energy * keV);    
     fParticleGun->SetParticleDefinition(particle);
     
 }

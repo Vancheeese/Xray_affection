@@ -1,2 +1,5 @@
-build
+!build/
+build/*
+!build/energy-agnle.py
+!build/indicatr.py
 .vscode

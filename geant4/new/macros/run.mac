@@ -1,4 +1,0 @@
-/run/numberOfThreads 6
-/run/initialize
-
-/control/loop energy.mac Energy 50 150 10
