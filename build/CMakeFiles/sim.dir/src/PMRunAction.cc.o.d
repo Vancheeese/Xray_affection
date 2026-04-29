@@ -434,137 +434,14 @@ CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VReadOutGeometry.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SensitiveVolumeList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSDFilter.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RunManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Event.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/evtdefs.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PrimaryVertex.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PrimaryParticle.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4DCofThisEvent.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VDigiCollection.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4TrajectoryContainer.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VTrajectory.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserEventInformation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4EventManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4StackManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserStackingAction.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ClassificationOfNewTrack.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4StackedTrack.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4TrackStack.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartTrackStack.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SubEventTrackStack.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SubEvent.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PrimaryTransformer.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTableIterator.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4TrackingManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SteppingManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Navigator.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4NormalNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSolid.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSolid.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AuxiliaryNavServices.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AuxiliaryNavServices.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4NormalNavigation.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VoxelNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4NavigationLogger.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4BlockingList.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4BlockingList.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelProxy.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelProxy.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelNode.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelNode.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelHeader.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SmartVoxelHeader.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VoxelNavigation.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParameterisedNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VPVParameterisation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VVolumeMaterialScanner.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParameterisedNavigation.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ReplicaNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ReplicaNavigation.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RegularNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VExternalNavigation.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Navigator.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4NoProcess.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VProcess.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/Randomize.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/Randomize.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/DualRand.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandomEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandomEngine.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/JamesRandom.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/MixMaxRng.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/MTwistEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RanecuEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RanluxEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/Ranlux64Engine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RanluxppEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RanshiEngine.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBinomial.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/Random.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/Random.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Utility/memory.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBinomial.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBreitWigner.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandFlat.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Utility/thread_local.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandFlat.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBreitWigner.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandChiSquare.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandChiSquare.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandExponential.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandExponential.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandExpZiggurat.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBit.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandBit.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGamma.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGamma.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGauss.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGauss.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGaussQ.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGaussQ.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGaussZiggurat.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGeneral.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandGeneral.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandLandau.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandLandau.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandPoissonQ.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandPoisson.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandPoisson.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandPoissonQ.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandStudentT.h \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Random/RandStudentT.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicsTable.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicsTable.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VParticleChange.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VParticleChange.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ForceCondition.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4GPILSelection.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleChange.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleChange.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProcessType.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProcessManager.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProcessVector.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProcessVector.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProcessManager.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserSteppingAction.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSteppingVerbose.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/trkgdefs.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4TrackingMessenger.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserTrackingAction.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RunManagerKernel.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/rundefs.hh \
- /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
- /usr/include/c++/13/bits/list.tcc \
- /home/iptch/geant4/new/include/PMRunAction.hh \
  /home/iptch/geant4/new/include/PMDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Box.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4GeomTypes.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4GeomConfig.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4CSGSolid.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSolid.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSolid.icc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Polyhedron.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/HepPolyhedron.h \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4TwoVector.hh \
@@ -601,5 +478,10 @@ CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleGun.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VPrimaryGenerator.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PrimaryVertex.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PrimaryParticle.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTableIterator.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.icc \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh

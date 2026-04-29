@@ -1,2 +1,7 @@
-!build/
+
+build/*
+!build/one.mac
+!build/img.py
+!build/energy.mac
+!build/vis.mac
 .vscode

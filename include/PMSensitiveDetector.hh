@@ -1,35 +1,27 @@
-#ifndef PMSENSITIVEDETECTOR_HH
-#define PMSENSITIVEDETECTOR_HH
+#ifndef PMSensitiveDetector_h
+#define PMSensitiveDetector_h 1
 
 #include "G4VSensitiveDetector.hh"
-
-#include "G4RunManager.hh"
-#include "G4AnalysisManager.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4UnitsTable.hh"
-#include "PMRunAction.hh"
-
 #include <fstream>
-#include <iostream>
-
+#include <mutex>
 
 class PMSensitiveDetector : public G4VSensitiveDetector
 {
 public:
-    PMSensitiveDetector(G4String);
-    ~PMSensitiveDetector();
-    
-    
+    PMSensitiveDetector(G4String name);
+    virtual ~PMSensitiveDetector();
+
+    virtual void Initialize(G4HCofThisEvent*);
+    virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+    virtual void EndOfEvent(G4HCofThisEvent*);
 
 private:
-    virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
-    
-    
-    virtual void Initialize(G4HCofThisEvent*) override;
-    virtual void EndOfEvent(G4HCofThisEvent *) override;
+    static std::ofstream outFile;
+    static std::mutex fileMutex;
 
-    G4double fTotalEnergyDeposited;
-    std::ofstream outFile;
+    // Вспомогательные функции для дискретизации
+    int GetDiscreteIndex(G4double position, G4double size, int numBins);
+    G4double GetDiscretePosition(int index, G4double size, int numBins);
 };
 
 extern G4int photon_count;

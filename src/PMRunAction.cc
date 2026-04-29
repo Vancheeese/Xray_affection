@@ -50,7 +50,7 @@ void PMRunAction::EndOfRunAction(const G4Run *run)
     {
         // G4cout << "Pass photons: " << photon_count << G4endl;
          //"Material: " << leadMat;
-        G4cout << "Pass photons: " << photon_count << G4endl;
+       /* G4cout << "Pass photons: " << photon_count << G4endl;
         G4cout << "Energy: " << energy << " keV" << G4endl;
         G4cout << "Material: " << material << G4endl;
         G4cout << "Thickness: " << leadThickness << " mm" << G4endl;
@@ -66,11 +66,11 @@ void PMRunAction::EndOfRunAction(const G4Run *run)
                 stuff << "Material: " << material << std::endl;
                 stuff << "Thickness: " << leadThickness << " mm" << std::endl;
             }
-            //stuff << "Pass photons: " << photon_count << std::endl;
+            stuff << "Pass photons: " << photon_count << std::endl;
             stuff << "Energy: " << energy*1000 << " keV" << std::endl;
 
             stuff.flush();
-        }
+        }*/
 
     }
 }

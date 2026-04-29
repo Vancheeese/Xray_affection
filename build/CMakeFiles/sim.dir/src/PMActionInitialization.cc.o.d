@@ -270,6 +270,8 @@ CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTableIterator.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.icc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SystemOfUnits.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh \
  /home/iptch/geant4/new/include/PMRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Run.hh \

@@ -1,20 +1,21 @@
-п»ї#include "PMPhysicsList.hh"
-#include "G4ComptonScattering.hh"
-#include "G4KleinNishinaModel.hh"
-#include "G4ParticleTable.hh"
-#include "G4ProcessManager.hh"  // в†ђ Р­РўРћРў HEADER Р Р•РЁРђР•Рў РџР РћР‘Р›Р•РњРЈ
+#include "PMPhysicsList.hh"
+#include "G4EmLivermorePhysics.hh"
 #include "G4VModularPhysicsList.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4ProcessManager.hh"
-#include "G4EmStandardPhysics.hh" 
+#include "G4OpticalPhysics.hh"
 
-PMPhysicsList::PMPhysicsList() : G4VModularPhysicsList()
+
+PMPhysicsList::PMPhysicsList()
 {
-    defaultCutValue = 1.0 * um;
-    SetVerboseLevel(1);
+        // Низкоэнергетическая ЭМ физика (от ~250 eV до 100 GeV)
+        RegisterPhysics(new G4EmLivermorePhysics());
 
-    RegisterPhysics(new G4EmStandardPhysics());
-}
+    //RegisterPhysics(new G4EmStandardPhysics());
+
+        // Опционально: добавить оптическую физику
+         RegisterPhysics(new G4OpticalPhysics());
+    }
+
+
 
 PMPhysicsList::~PMPhysicsList()
 {
