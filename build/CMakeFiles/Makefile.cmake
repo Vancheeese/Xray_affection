@@ -7,6 +7,10 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+  "/home/iptch/geant4/Xray_affection/CMakeLists.txt"
+  "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
+  "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/G4EXPATShim.cmake"
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/G4X11Shim.cmake"
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/Geant4Config.cmake"
@@ -20,10 +24,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/PTL/PTLTargets-release.cmake"
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/PTL/PTLTargets.cmake"
   "/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/UseGeant4.cmake"
-  "/home/iptch/geant4/new/CMakeLists.txt"
-  "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
-  "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
-  "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfig.cmake"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfigExtras.cmake"
   "/usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake"

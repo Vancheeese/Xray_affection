@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iptch/geant4/new
+CMAKE_SOURCE_DIR = /home/iptch/geant4/Xray_affection
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iptch/geant4/new/build
+CMAKE_BINARY_DIR = /home/iptch/geant4/Xray_affection/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/sim.dir/depend.make
@@ -70,102 +70,102 @@ include CMakeFiles/sim.dir/progress.make
 include CMakeFiles/sim.dir/flags.make
 
 CMakeFiles/sim.dir/sim.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc
+CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/Xray_affection/sim.cc
 CMakeFiles/sim.dir/sim.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/sim.dir/sim.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/sim.cc.o -MF CMakeFiles/sim.dir/sim.cc.o.d -o CMakeFiles/sim.dir/sim.cc.o -c /home/iptch/geant4/new/sim.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/sim.dir/sim.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/sim.cc.o -MF CMakeFiles/sim.dir/sim.cc.o.d -o CMakeFiles/sim.dir/sim.cc.o -c /home/iptch/geant4/Xray_affection/sim.cc
 
 CMakeFiles/sim.dir/sim.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/sim.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/sim.cc > CMakeFiles/sim.dir/sim.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/sim.cc > CMakeFiles/sim.dir/sim.cc.i
 
 CMakeFiles/sim.dir/sim.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/sim.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/sim.cc -o CMakeFiles/sim.dir/sim.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/sim.cc -o CMakeFiles/sim.dir/sim.cc.s
 
 CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: /home/iptch/geant4/new/src/PMActionInitialization.cc
+CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: /home/iptch/geant4/Xray_affection/src/PMActionInitialization.cc
 CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/sim.dir/src/PMActionInitialization.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMActionInitialization.cc.o -MF CMakeFiles/sim.dir/src/PMActionInitialization.cc.o.d -o CMakeFiles/sim.dir/src/PMActionInitialization.cc.o -c /home/iptch/geant4/new/src/PMActionInitialization.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/sim.dir/src/PMActionInitialization.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMActionInitialization.cc.o -MF CMakeFiles/sim.dir/src/PMActionInitialization.cc.o.d -o CMakeFiles/sim.dir/src/PMActionInitialization.cc.o -c /home/iptch/geant4/Xray_affection/src/PMActionInitialization.cc
 
 CMakeFiles/sim.dir/src/PMActionInitialization.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMActionInitialization.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMActionInitialization.cc > CMakeFiles/sim.dir/src/PMActionInitialization.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMActionInitialization.cc > CMakeFiles/sim.dir/src/PMActionInitialization.cc.i
 
 CMakeFiles/sim.dir/src/PMActionInitialization.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMActionInitialization.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMActionInitialization.cc -o CMakeFiles/sim.dir/src/PMActionInitialization.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMActionInitialization.cc -o CMakeFiles/sim.dir/src/PMActionInitialization.cc.s
 
 CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: /home/iptch/geant4/new/src/PMDetectorConstruction.cc
+CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: /home/iptch/geant4/Xray_affection/src/PMDetectorConstruction.cc
 CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o -MF CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o.d -o CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o -c /home/iptch/geant4/new/src/PMDetectorConstruction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o -MF CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o.d -o CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o -c /home/iptch/geant4/Xray_affection/src/PMDetectorConstruction.cc
 
 CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMDetectorConstruction.cc > CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMDetectorConstruction.cc > CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.i
 
 CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMDetectorConstruction.cc -o CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMDetectorConstruction.cc -o CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.s
 
 CMakeFiles/sim.dir/src/PMPhysicsList.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMPhysicsList.cc.o: /home/iptch/geant4/new/src/PMPhysicsList.cc
+CMakeFiles/sim.dir/src/PMPhysicsList.cc.o: /home/iptch/geant4/Xray_affection/src/PMPhysicsList.cc
 CMakeFiles/sim.dir/src/PMPhysicsList.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/sim.dir/src/PMPhysicsList.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMPhysicsList.cc.o -MF CMakeFiles/sim.dir/src/PMPhysicsList.cc.o.d -o CMakeFiles/sim.dir/src/PMPhysicsList.cc.o -c /home/iptch/geant4/new/src/PMPhysicsList.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/sim.dir/src/PMPhysicsList.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMPhysicsList.cc.o -MF CMakeFiles/sim.dir/src/PMPhysicsList.cc.o.d -o CMakeFiles/sim.dir/src/PMPhysicsList.cc.o -c /home/iptch/geant4/Xray_affection/src/PMPhysicsList.cc
 
 CMakeFiles/sim.dir/src/PMPhysicsList.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMPhysicsList.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMPhysicsList.cc > CMakeFiles/sim.dir/src/PMPhysicsList.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMPhysicsList.cc > CMakeFiles/sim.dir/src/PMPhysicsList.cc.i
 
 CMakeFiles/sim.dir/src/PMPhysicsList.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMPhysicsList.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMPhysicsList.cc -o CMakeFiles/sim.dir/src/PMPhysicsList.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMPhysicsList.cc -o CMakeFiles/sim.dir/src/PMPhysicsList.cc.s
 
 CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: /home/iptch/geant4/new/src/PMPrimaryGenerator.cc
+CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: /home/iptch/geant4/Xray_affection/src/PMPrimaryGenerator.cc
 CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o -MF CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o.d -o CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o -c /home/iptch/geant4/new/src/PMPrimaryGenerator.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o -MF CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o.d -o CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o -c /home/iptch/geant4/Xray_affection/src/PMPrimaryGenerator.cc
 
 CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMPrimaryGenerator.cc > CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMPrimaryGenerator.cc > CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.i
 
 CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMPrimaryGenerator.cc -o CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMPrimaryGenerator.cc -o CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.s
 
 CMakeFiles/sim.dir/src/PMRunAction.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMRunAction.cc.o: /home/iptch/geant4/new/src/PMRunAction.cc
+CMakeFiles/sim.dir/src/PMRunAction.cc.o: /home/iptch/geant4/Xray_affection/src/PMRunAction.cc
 CMakeFiles/sim.dir/src/PMRunAction.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/sim.dir/src/PMRunAction.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMRunAction.cc.o -MF CMakeFiles/sim.dir/src/PMRunAction.cc.o.d -o CMakeFiles/sim.dir/src/PMRunAction.cc.o -c /home/iptch/geant4/new/src/PMRunAction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/sim.dir/src/PMRunAction.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMRunAction.cc.o -MF CMakeFiles/sim.dir/src/PMRunAction.cc.o.d -o CMakeFiles/sim.dir/src/PMRunAction.cc.o -c /home/iptch/geant4/Xray_affection/src/PMRunAction.cc
 
 CMakeFiles/sim.dir/src/PMRunAction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMRunAction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMRunAction.cc > CMakeFiles/sim.dir/src/PMRunAction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMRunAction.cc > CMakeFiles/sim.dir/src/PMRunAction.cc.i
 
 CMakeFiles/sim.dir/src/PMRunAction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMRunAction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMRunAction.cc -o CMakeFiles/sim.dir/src/PMRunAction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMRunAction.cc -o CMakeFiles/sim.dir/src/PMRunAction.cc.s
 
 CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: CMakeFiles/sim.dir/flags.make
-CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: /home/iptch/geant4/new/src/PMSensitiveDetector.cc
+CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: /home/iptch/geant4/Xray_affection/src/PMSensitiveDetector.cc
 CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: CMakeFiles/sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o -MF CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o.d -o CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o -c /home/iptch/geant4/new/src/PMSensitiveDetector.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o -MF CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o.d -o CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o -c /home/iptch/geant4/Xray_affection/src/PMSensitiveDetector.cc
 
 CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/new/src/PMSensitiveDetector.cc > CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iptch/geant4/Xray_affection/src/PMSensitiveDetector.cc > CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.i
 
 CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/new/src/PMSensitiveDetector.cc -o CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iptch/geant4/Xray_affection/src/PMSensitiveDetector.cc -o CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.s
 
 # Object files for target sim
 sim_OBJECTS = \
@@ -228,7 +228,7 @@ sim: /home/iptch/geant4/geant4-v11.3.2-install/lib/libG4global.so
 sim: /home/iptch/geant4/geant4-v11.3.2-install/lib/libG4clhep.so
 sim: /home/iptch/geant4/geant4-v11.3.2-install/lib/libG4ptl.so.3.0.0
 sim: CMakeFiles/sim.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/iptch/geant4/new/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable sim"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/iptch/geant4/Xray_affection/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable sim"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sim.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -240,6 +240,6 @@ CMakeFiles/sim.dir/clean:
 .PHONY : CMakeFiles/sim.dir/clean
 
 CMakeFiles/sim.dir/depend:
-	cd /home/iptch/geant4/new/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iptch/geant4/new /home/iptch/geant4/new /home/iptch/geant4/new/build /home/iptch/geant4/new/build /home/iptch/geant4/new/build/CMakeFiles/sim.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/iptch/geant4/Xray_affection/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iptch/geant4/Xray_affection /home/iptch/geant4/Xray_affection /home/iptch/geant4/Xray_affection/build /home/iptch/geant4/Xray_affection/build /home/iptch/geant4/Xray_affection/build/CMakeFiles/sim.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/sim.dir/depend
 

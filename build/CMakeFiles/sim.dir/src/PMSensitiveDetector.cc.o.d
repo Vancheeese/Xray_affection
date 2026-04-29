@@ -1,7 +1,7 @@
 CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: \
- /home/iptch/geant4/new/src/PMSensitiveDetector.cc \
+ /home/iptch/geant4/Xray_affection/src/PMSensitiveDetector.cc \
  /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/Xray_affection/include/PMSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4CollectionNameVector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \

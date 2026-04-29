@@ -1,6 +1,7 @@
 CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
- /home/iptch/geant4/new/src/PMRunAction.cc /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMRunAction.hh \
+ /home/iptch/geant4/Xray_affection/src/PMRunAction.cc \
+ /usr/include/stdc-predef.h \
+ /home/iptch/geant4/Xray_affection/include/PMRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Types.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4GlobalConfig.hh \
@@ -331,7 +332,7 @@ CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/CLHEP/Units/SystemOfUnits.h \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UnitsTable.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UnitsTable.icc \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/Xray_affection/include/PMSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4CollectionNameVector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4HCofThisEvent.hh \
@@ -434,7 +435,7 @@ CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VReadOutGeometry.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SensitiveVolumeList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSDFilter.hh \
- /home/iptch/geant4/new/include/PMDetectorConstruction.hh \
+ /home/iptch/geant4/Xray_affection/include/PMDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Box.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4GeomTypes.hh \
@@ -472,8 +473,8 @@ CMakeFiles/sim.dir/src/PMRunAction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4HCtable.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SDStructure.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
- /home/iptch/geant4/new/include/PMPrimaryGenerator.hh \
+ /home/iptch/geant4/Xray_affection/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/Xray_affection/include/PMPrimaryGenerator.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleGun.hh \

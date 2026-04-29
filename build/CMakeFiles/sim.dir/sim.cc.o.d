@@ -1,4 +1,4 @@
-CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
+CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/Xray_affection/sim.cc \
  /usr/include/stdc-predef.h /usr/include/c++/13/iostream \
  /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -628,7 +628,7 @@ CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UIbatch.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UIExecutive.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUIshell.hh \
- /home/iptch/geant4/new/include/PMPhysicsList.hh \
+ /home/iptch/geant4/Xray_affection/include/PMPhysicsList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VModularPhysicsList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VPhysicsConstructor.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicsListHelper.hh \
@@ -643,7 +643,7 @@ CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProductionCuts.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4MCCIndexConversionTable.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4EmStandardPhysics.hh \
- /home/iptch/geant4/new/include/PMDetectorConstruction.hh \
+ /home/iptch/geant4/Xray_affection/include/PMDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Box.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalVolume.hh \
@@ -669,11 +669,11 @@ CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VReadOutGeometry.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SensitiveVolumeList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSDFilter.hh \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/Xray_affection/include/PMSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
- /home/iptch/geant4/new/include/PMActionInitialization.hh \
+ /home/iptch/geant4/Xray_affection/include/PMActionInitialization.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserActionInitialization.hh \
- /home/iptch/geant4/new/include/PMPrimaryGenerator.hh \
+ /home/iptch/geant4/Xray_affection/include/PMPrimaryGenerator.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleGun.hh \
@@ -681,7 +681,7 @@ CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh \
- /home/iptch/geant4/new/include/PMRunAction.hh \
+ /home/iptch/geant4/Xray_affection/include/PMRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Run.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AnalysisManager.hh \

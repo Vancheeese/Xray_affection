@@ -1,4 +1,4 @@
-/home/iptch/geant4/new/build/CMakeFiles/sim.dir
-/home/iptch/geant4/new/build/CMakeFiles/Tutorial.dir
-/home/iptch/geant4/new/build/CMakeFiles/edit_cache.dir
-/home/iptch/geant4/new/build/CMakeFiles/rebuild_cache.dir
+/home/iptch/geant4/Xray_affection/build/CMakeFiles/sim.dir
+/home/iptch/geant4/Xray_affection/build/CMakeFiles/Tutorial.dir
+/home/iptch/geant4/Xray_affection/build/CMakeFiles/edit_cache.dir
+/home/iptch/geant4/Xray_affection/build/CMakeFiles/rebuild_cache.dir

@@ -1,7 +1,7 @@
 CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: \
- /home/iptch/geant4/new/src/PMPrimaryGenerator.cc \
+ /home/iptch/geant4/Xray_affection/src/PMPrimaryGenerator.cc \
  /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMPrimaryGenerator.hh \
+ /home/iptch/geant4/Xray_affection/include/PMPrimaryGenerator.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PDefManager.hh \

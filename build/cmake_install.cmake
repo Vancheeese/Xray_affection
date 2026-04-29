@@ -1,4 +1,4 @@
-# Install script for directory: /home/iptch/geant4/new
+# Install script for directory: /home/iptch/geant4/Xray_affection
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/iptch/geant4/new/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/iptch/geant4/Xray_affection/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

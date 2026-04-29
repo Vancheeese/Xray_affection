@@ -1,9 +1,9 @@
 CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: \
- /home/iptch/geant4/new/src/PMActionInitialization.cc \
+ /home/iptch/geant4/Xray_affection/src/PMActionInitialization.cc \
  /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMActionInitialization.hh \
+ /home/iptch/geant4/Xray_affection/include/PMActionInitialization.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserActionInitialization.hh \
- /home/iptch/geant4/new/include/PMPrimaryGenerator.hh \
+ /home/iptch/geant4/Xray_affection/include/PMPrimaryGenerator.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PDefManager.hh \
@@ -272,7 +272,7 @@ CMakeFiles/sim.dir/src/PMActionInitialization.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SystemOfUnits.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh \
- /home/iptch/geant4/new/include/PMRunAction.hh \
+ /home/iptch/geant4/Xray_affection/include/PMRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4UserRunAction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Run.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AnalysisManager.hh \

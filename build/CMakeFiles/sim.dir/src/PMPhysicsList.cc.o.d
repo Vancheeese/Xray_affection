@@ -1,6 +1,7 @@
 CMakeFiles/sim.dir/src/PMPhysicsList.cc.o: \
- /home/iptch/geant4/new/src/PMPhysicsList.cc /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMPhysicsList.hh \
+ /home/iptch/geant4/Xray_affection/src/PMPhysicsList.cc \
+ /usr/include/stdc-predef.h \
+ /home/iptch/geant4/Xray_affection/include/PMPhysicsList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VModularPhysicsList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VPhysicsConstructor.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.hh \

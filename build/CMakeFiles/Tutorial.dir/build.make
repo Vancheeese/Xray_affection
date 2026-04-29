@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iptch/geant4/new
+CMAKE_SOURCE_DIR = /home/iptch/geant4/Xray_affection
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iptch/geant4/new/build
+CMAKE_BINARY_DIR = /home/iptch/geant4/Xray_affection/build
 
 # Utility rule file for Tutorial.
 
@@ -81,6 +81,6 @@ CMakeFiles/Tutorial.dir/clean:
 .PHONY : CMakeFiles/Tutorial.dir/clean
 
 CMakeFiles/Tutorial.dir/depend:
-	cd /home/iptch/geant4/new/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iptch/geant4/new /home/iptch/geant4/new /home/iptch/geant4/new/build /home/iptch/geant4/new/build /home/iptch/geant4/new/build/CMakeFiles/Tutorial.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/iptch/geant4/Xray_affection/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iptch/geant4/Xray_affection /home/iptch/geant4/Xray_affection /home/iptch/geant4/Xray_affection/build /home/iptch/geant4/Xray_affection/build /home/iptch/geant4/Xray_affection/build/CMakeFiles/Tutorial.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/Tutorial.dir/depend
 

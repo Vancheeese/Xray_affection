@@ -1,7 +1,7 @@
 CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
- /home/iptch/geant4/new/src/PMDetectorConstruction.cc \
+ /home/iptch/geant4/Xray_affection/src/PMDetectorConstruction.cc \
  /usr/include/stdc-predef.h \
- /home/iptch/geant4/new/include/PMDetectorConstruction.hh \
+ /home/iptch/geant4/Xray_affection/include/PMDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VUserDetectorConstruction.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ios.hh \
@@ -399,7 +399,7 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VReadOutGeometry.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SensitiveVolumeList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSDFilter.hh \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/Xray_affection/include/PMSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicalConstants.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Tubs.hh \
