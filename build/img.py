@@ -5,8 +5,10 @@ from scipy.ndimage import gaussian_filter
 import gc
 
 # ------------------- Параметры -------------------
-GRID_MIN = -5.0
-GRID_MAX = 5.0
+scale=100
+
+GRID_MIN = -5.0/scale
+GRID_MAX = 5.0/scale
 NUM_BINS = 200
 PHOTONS_PER_POSITION = 3
 INITIAL_ENERGY = 30.0
