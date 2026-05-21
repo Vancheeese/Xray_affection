@@ -134,7 +134,7 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     G4ThreeVector hitPos = preStepPoint->GetPosition();
 
     // Параметры дискретизации: от -5 см до 5 см
-    const G4double range = 5.0 * cm;
+    const G4double range = 5.0/100 * cm;
     const int numBins = 100;
 
     int binX = GetDiscreteIndex(hitPos.x(), range, numBins);
@@ -157,6 +157,7 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 
 void PMSensitiveDetector::EndOfEvent(G4HCofThisEvent*)
 {
+
     // В конце события выводим количество зарегистрированных фотонов
     if (eventPhotonCount > 0) {
         /* G4cout << "Event ended. Total optical photons detected: " << eventPhotonCount << G4endl;*/

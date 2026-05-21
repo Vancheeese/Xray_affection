@@ -119,7 +119,7 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     // Генерируем событие только если не завершили
     if (shouldGenerate && !fIsFinished.load()) {
         // Используем ТУ ЖЕ САМУЮ формулу, что и в SensitiveDetector
-        const G4double range = 5.0 * cm;   
+        const G4double range = 5.0/100 * cm;   
         const G4int numBins = fGridSize;           // 25 бинов
 
         // Вычисляем центр бина детектора
