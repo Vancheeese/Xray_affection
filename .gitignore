@@ -4,4 +4,7 @@ build/*
 !build/img.py
 !build/energy.mac
 !build/vis.mac
+!build/run_thickness.sh
+!build/v2.py
+!build/mtf.py
 .vscode

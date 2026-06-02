@@ -10,7 +10,7 @@
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelX(0);
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelY(0);
 std::atomic<G4int> PMPrimaryGenerator::fParticlesEmittedInCurrentPixel(0);
-const G4int PMPrimaryGenerator::fParticlesPerPixel = 3;  // N частиц на точку
+const G4int PMPrimaryGenerator::fParticlesPerPixel = 12;  // N частиц на точку
 const G4int PMPrimaryGenerator::fGridSize = 100;
 std::atomic<G4bool> PMPrimaryGenerator::fIsFinished(false);
 

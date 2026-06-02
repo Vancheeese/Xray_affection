@@ -41,46 +41,104 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     vacMPT->AddProperty("RINDEX", vacEnergies, vacRindex, nVac);
     worldMat->SetMaterialPropertiesTable(vacMPT);
 
-    G4double xWorld = 10./scale * m;
-    G4double yWorld = 10./scale * m;
+    G4double xWorld = 3./scale * m;
+    G4double yWorld = 3./scale * m;
     G4double zWorld = 1./3 * m;
 
     G4Box* solidWorld = new G4Box("solidWorld", 0.5 * xWorld, 0.5 * yWorld, 0.5 * zWorld);
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
     G4VPhysicalVolume* physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0);
 
-    G4double leadSize = 10.0/scale * cm;
+    // ========== ПЛАСТИНА С КОРОТКИМИ ЩЕЛЯМИ ДЛЯ MTF ==========
+    G4double leadSize = 10.0 / scale * cm;      // 1 мм
 
-    G4double holeRadius = 2/scale * cm;
+    // Создаём цельную пластину
+    G4Box* solidLeadBase = new G4Box("solidLeadBase",
+        0.5 * leadSize,
+        0.5 * leadSize,
+        0.5 * leadThickness);
 
-    // Сплошная пластина (основа)
-    G4Box* solidLeadBase = new G4Box("solidLeadBase", 0.5 * leadSize, 0.5 * leadSize, 0.5 * leadThickness);
+    // Структура для определения щели
+    struct SlitDef {
+        G4double width;    // ширина щели (по Y) - мкм
+        G4double length;   // длина щели (по X) - мкм (КОРОТКАЯ!)
+        G4double x;        // центр по X (мм)
+        G4double y;        // центр по Y (мм)
+    };
 
-    // Цилиндр для вычитания (отверстие по центру)
-    G4Tubs* solidHole = new G4Tubs("solidHole", 0., holeRadius, leadThickness, 0., 360. * deg);
+    // ПРАВИЛЬНЫЕ щели для MTF (короткие, не доходят до краёв)
+    // Все щели в центре пластины, разные Y позиции
+    std::vector<SlitDef> slits = {
+        // Щель 90 мкм (на грани разрешения)
+        {90.0 * um, 400.0 * um, 0.0 * mm, -0.250 * mm},
 
-    // Вычитаем отверстие из пластины
-    G4SubtractionSolid* solidLead = new G4SubtractionSolid("solidLead", solidLeadBase, solidHole, 0, G4ThreeVector(0., -leadSize/2., 0.));
-    // -------- Создание логического и физического объёмов --------
-    G4LogicalVolume* logicLead = new G4LogicalVolume(solidLead, leadMat, "logicLead");
-    G4VPhysicalVolume* physLead = new G4PVPlacement(0, G4ThreeVector(0., 0., 10. * cm), logicLead, "physLead", logicWorld, false, checkOverlaps);
+        // Щель 110 мкм (должна разрешаться)
+        {110.0 * um, 400.0 * um, 0.0 * mm, 0.000 * mm},
 
-    // Визуализация пластины
-    G4VisAttributes* leadVisAtt = new G4VisAttributes(G4Color(1.0, 0.0, 0.0, 0.5));
+        // Щель 130 мкм (должна разрешаться хорошо)
+        {130.0 * um, 400.0 * um, 0.0 * mm, 0.250 * mm},
+    };
+
+    // Начинаем с цельной пластины
+    G4VSolid* currentSolid = solidLeadBase;
+
+    // Последовательно вычитаем щели
+    for (size_t i = 0; i < slits.size(); ++i) {
+        const auto& s = slits[i];
+
+        // Прямоугольная щель (короткая по X, узкая по Y)
+        G4Box* slitBox = new G4Box(G4String("slit") + std::to_string(i),
+            0.5 * s.length,   // длина по X (короткая!)
+            0.5 * s.width,    // ширина по Y
+            0.5 * leadThickness);
+
+        // Позиция щели
+        G4ThreeVector pos(s.x, s.y, 0.0);
+
+        // Вычитаем
+        currentSolid = new G4SubtractionSolid(G4String("solidLead") + std::to_string(i),
+            currentSolid, slitBox, 0, pos);
+    }
+
+    // Создаём логический объём
+    G4LogicalVolume* logicLead = new G4LogicalVolume(currentSolid, leadMat, "logicLead");
+
+    // Размещаем пластину
+    G4VPhysicalVolume* physLead = new G4PVPlacement(0,
+        G4ThreeVector(0., 0., 10. * cm),
+        logicLead,
+        "physLead",
+        logicWorld,
+        false,
+        0,
+        checkOverlaps);
+
+    // Визуализация (красная, полупрозрачная)
+    G4VisAttributes* leadVisAtt = new G4VisAttributes(G4Color(1.0, 0.0, 0.0, 0.6));
     leadVisAtt->SetForceSolid(true);
     logicLead->SetVisAttributes(leadVisAtt);
 
-    // ========== СЦИНТИЛЛЯЦИОННАЯ ПЛАСТИНА ИЗ CsI ==========
-    G4double csiThickness = 50 * um;
-    G4double csiSizeX = 10.0/scale * cm;
-    G4double csiSizeY = 5.0/scale * cm;
+    // Отладочная информация
+    G4cout << "\n=== МЕДНАЯ ПЛАСТИНА С 3 ЩЕЛЯМИ ===" << G4endl;
+    G4cout << "Размер: " << leadSize / mm << " x " << leadSize / mm << " mm" << G4endl;
+    G4cout << "Толщина: " << leadThickness / um << " um" << G4endl;
+    G4cout << "Щели (ширина x длина, позиция Y):" << G4endl;
+    for (const auto& s : slits) {
+        G4cout << "  - " << s.width / um << " x " << s.length / mm << " мм, Y = " << s.y / mm << " мм" << G4endl;
+    }
+    G4cout << "==================================\n" << G4endl;
 
-    // Создаём материал CsI
+    // ========== СЦИНТИЛЛЯЦИОННАЯ ПЛАСТИНА ИЗ CsI ==========
+    G4double csiThickness = fCsIThickness;  // 10-500 мкм
+    G4double csiSizeX = 10.0 / scale * cm;
+    G4double csiSizeY = 10.0 / scale * cm;
+
+    // Создаём материал CsI (без изменений)
     G4Material* csiMat = new G4Material("CsI", 4.51 * g / cm3, 2);
     csiMat->AddElement(nist->FindOrBuildElement("Cs"), 1);
     csiMat->AddElement(nist->FindOrBuildElement("I"), 1);
 
-    // Добавляем оптические свойства
+    // Оптические свойства (без изменений)
     G4MaterialPropertiesTable* csiMPT = new G4MaterialPropertiesTable();
 
     const G4int nEnergies = 6;
@@ -97,10 +155,12 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4double scintIntensity[nScint] = { 0.05, 0.2, 0.5, 0.8, 1.0, 0.4, 0.1 };
     csiMPT->AddProperty("SCINTILLATIONCOMPONENT1", scintEnergies, scintIntensity, nScint);
 
-    // Реалистичные значения для CsI
+    // Длина поглощения
     const G4int nAbs = 2;
     G4double absEnergies[] = { 2.0 * eV, 3.1 * eV };
-    G4double absLength[] = { 3.0 * cm, 3.0 * cm };  // ~3 см для сцинтилляционного света
+    G4double absLength1 = std::max(50.0 * um, csiThickness * 0.2);
+    G4double absLength2 = std::max(50.0 * um, csiThickness * 0.2);
+    G4double absLength[] = { absLength1, absLength2 };
     csiMPT->AddProperty("ABSLENGTH", absEnergies, absLength, nAbs);
 
     csiMat->SetMaterialPropertiesTable(csiMPT);
@@ -109,20 +169,35 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4Box* solidCsI = new G4Box("solidCsI", 0.5 * csiSizeX, 0.5 * csiSizeY, 0.5 * csiThickness);
     logicCsI = new G4LogicalVolume(solidCsI, csiMat, "logicCsI");
 
-    // Позиция CsI (центр сцинтиллятора)
+    // ========== ИСПРАВЛЕНО: позиция CsI по центру (Y = 0) ==========
     G4double csiPosZ = 0.165 * m;
-    G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, -0.025/scale * m, csiPosZ),
+    G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, 0. * m, csiPosZ),
         logicCsI, "physCsI", logicWorld, false, 2, checkOverlaps);
+
+    //// ========== ОТРАЖАТЕЛЬ (без изменений) ==========
+    //G4OpticalSurface* reflector = new G4OpticalSurface("CsI_Reflector");
+    //reflector->SetType(dielectric_metal);
+    //reflector->SetModel(unified);
+    //reflector->SetFinish(polished);
+    //reflector->SetPolish(1.0);
+
+    //G4MaterialPropertiesTable* reflectorMPT = new G4MaterialPropertiesTable();
+    //const G4int nRefl = 2;
+    //G4double reflEnergies[] = { 2.0 * eV, 3.1 * eV };
+    //G4double reflectivity[] = { 0.90, 0.90 };
+    //reflectorMPT->AddProperty("REFLECTIVITY", reflEnergies, reflectivity, nRefl);
+    //reflector->SetMaterialPropertiesTable(reflectorMPT);
+
+    //new G4LogicalSkinSurface("CsI_Reflector_Surface", logicCsI, reflector);
 
     // Визуализация CsI
     G4VisAttributes* csiVisAtt = new G4VisAttributes(G4Color(0.0, 1.0, 0.0, 0.6));
     csiVisAtt->SetForceSolid(true);
     logicCsI->SetVisAttributes(csiVisAtt);
 
-    // Создаем материал оптического клея (имитируем折射率 1.5)
+    // ========== ОПТИЧЕСКИЙ КЛЕЙ ==========
     G4Material* opticalGlue = new G4Material("OpticalGlue", 1.2 * g / cm3, 1);
     opticalGlue->AddElement(nist->FindOrBuildElement("C"), 1);
-    // Добавляем показатель преломления (как у стекла)
     G4MaterialPropertiesTable* glueMPT = new G4MaterialPropertiesTable();
     const G4int nGlue = 2;
     G4double glueEnergies[] = { 2.0 * eV, 3.1 * eV };
@@ -130,45 +205,34 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     glueMPT->AddProperty("RINDEX", glueEnergies, glueRindex, nGlue);
     opticalGlue->SetMaterialPropertiesTable(glueMPT);
 
-    // Создаем объем клея (толщина 10 микрон)
-    G4double glueThickness = 10.0 * um;
+    G4double glueThickness = 1.0 * um;
     G4Box* solidGlue = new G4Box("solidGlue",
         0.5 * csiSizeX,
         0.5 * csiSizeY,
         0.5 * glueThickness);
     G4LogicalVolume* logicGlue = new G4LogicalVolume(solidGlue, opticalGlue, "logicGlue");
 
-    // Размещаем клей между CsI и детектором
     G4double gluePosZ = csiPosZ + (csiThickness / 2.0) + (glueThickness / 2.0);
-    new G4PVPlacement(0, G4ThreeVector(0. * m, -0.025 / scale * m, gluePosZ),
+    // ========== ИСПРАВЛЕНО: позиция клея по центру (Y = 0) ==========
+    G4VPhysicalVolume* physGlue = new G4PVPlacement(0, G4ThreeVector(0. * m, 0. * m, gluePosZ),
         logicGlue, "physGlue", logicWorld, false, 3, checkOverlaps);
 
-    
-
-    // ========== КРЕМНИЕВЫЙ ДЕТЕКТОР (ВПЛОТНУЮ К CsI) ==========
+    // ========== КРЕМНИЕВЫЙ ДЕТЕКТОР ==========
     G4Material* siMat = nist->FindOrBuildMaterial("G4_Si");
 
-    // Оптические свойства для кремния
     G4MaterialPropertiesTable* siMPT = new G4MaterialPropertiesTable();
 
     const G4int nSiEnergies = 3;
     G4double siEnergies[] = { 1.5 * eV, 2.5 * eV, 3.5 * eV };
-    G4double siRindex[] = { 3.5, 4.0, 5.0 };        // Показатель преломления кремния
-    G4double siAbsLength[] = { 500 * um, 50 * um, 10 * um }; // Длина поглощения
-
+    G4double siRindex[] = { 3.5, 4.0, 5.0 };
+    G4double siAbsLength[] = { 15 * um, 10 * um, 5 * um };
     siMPT->AddProperty("RINDEX", siEnergies, siRindex, nSiEnergies);
     siMPT->AddProperty("ABSLENGTH", siEnergies, siAbsLength, nSiEnergies);
-
-    // Квантовая эффективность кремния
-    G4double siEfficiency[] = { 0.5, 0.8, 0.9 };
-    siMPT->AddProperty("EFFICIENCY", siEnergies, siEfficiency, nSiEnergies);
-
     siMat->SetMaterialPropertiesTable(siMPT);
 
-    // Создаем кремниевый детектор (такого же размера как CsI)
-    G4double detectorSizeX = 10.0/scale * cm;
-    G4double detectorSizeY = 5.0/scale * cm;
-    G4double detectorThickness = 0.5 * mm;
+    G4double detectorSizeX = 10.0 / scale * cm;
+    G4double detectorSizeY = 10.0 / scale * cm;
+    G4double detectorThickness = 30 * um;
 
     G4Box* solidDetector = new G4Box("solidDetector",
         0.5 * detectorSizeX,
@@ -176,11 +240,10 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         0.5 * detectorThickness);
     logicDetector = new G4LogicalVolume(solidDetector, siMat, "logicDetector");
 
-    // Изменяем позицию детектора (теперь после клея)
     G4double detectorPosZ = gluePosZ + (glueThickness / 2.0) + (detectorThickness / 2.0);
-
+    // ========== ИСПРАВЛЕНО: позиция детектора по центру (Y = 0) ==========
     G4VPhysicalVolume* physDetector = new G4PVPlacement(0,
-        G4ThreeVector(0. * m, -0.025/scale * m, detectorPosZ),
+        G4ThreeVector(0. * m, 0. * m, detectorPosZ),
         logicDetector, "physDetector", logicWorld, false, 1, checkOverlaps);
 
     // Визуализация детектора
@@ -188,37 +251,20 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     siVisAtt->SetForceSolid(true);
     logicDetector->SetVisAttributes(siVisAtt);
 
-    // ========== ОПТИЧЕСКАЯ ПОВЕРХНОСТЬ МЕЖДУ CsI И Si ==========
-// Создаем MaterialPropertiesTable для поверхности
-    G4MaterialPropertiesTable* surfaceMPT = new G4MaterialPropertiesTable();
+    // ========== ОПТИЧЕСКИЕ ПОВЕРХНОСТИ (без изменений) ==========
+    G4OpticalSurface* csiGlueInterface = new G4OpticalSurface("CsI_Glue_interface");
+    csiGlueInterface->SetType(dielectric_dielectric);
+    csiGlueInterface->SetModel(unified);
+    csiGlueInterface->SetFinish(polished);
+    csiGlueInterface->SetPolish(1.0);
+    new G4LogicalBorderSurface("CsI_Glue_border", physCsI, physGlue, csiGlueInterface);
 
-    // КОММЕНТАРИЙ: Не задаем REFLECTIVITY и TRANSMITTANCE вручную,
-    // позволяем Geant4 рассчитывать их по формулам Френеля из показателей преломления
-
-    /*
-    const G4int nInterfEnergies = 3;
-    G4double interfEnergies[] = { 1.5 * eV, 2.5 * eV, 3.5 * eV };
-    G4double reflectivity[] = { 0.05, 0.05, 0.05 };
-    G4double transmittance[] = { 0.95, 0.95, 0.95 };
-
-    surfaceMPT->AddProperty("REFLECTIVITY", interfEnergies, reflectivity, nInterfEnergies);
-    surfaceMPT->AddProperty("TRANSMITTANCE", interfEnergies, transmittance, nInterfEnergies);
-    */
-
-    // Создаем оптическую поверхность
-    G4OpticalSurface* csSiInterface = new G4OpticalSurface("CsI_Si_interface");
-    csSiInterface->SetType(dielectric_dielectric);
-    csSiInterface->SetModel(unified);
-    csSiInterface->SetFinish(polished);
-
-    // Явно задаем идеальную гладкость (подавляем любое рассеяние)
-    csSiInterface->SetPolish(1.0);  // 1.0 = идеально гладкая
-
-    // Присоединяем таблицу свойств к поверхности
-    csSiInterface->SetMaterialPropertiesTable(surfaceMPT);
-
-    // Применяем поверхность к границе между CsI и детектором
-    new G4LogicalBorderSurface("CsI_Si_border", physCsI, physDetector, csSiInterface);
+    G4OpticalSurface* glueSiInterface = new G4OpticalSurface("Glue_Si_interface");
+    glueSiInterface->SetType(dielectric_dielectric);
+    glueSiInterface->SetModel(unified);
+    glueSiInterface->SetFinish(polished);
+    glueSiInterface->SetPolish(1.0);
+    new G4LogicalBorderSurface("Glue_Si_border", physGlue, physDetector, glueSiInterface);
 
     return physWorld;
 }
