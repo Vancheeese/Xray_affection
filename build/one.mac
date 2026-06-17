@@ -1,3 +1,4 @@
-/run/numberOfThreads 12
+
 /run/initialize
-/run/beamOn 120000
+/vis/disable
+/run/beamOn 100000

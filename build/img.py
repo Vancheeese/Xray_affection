@@ -12,7 +12,7 @@ scale = 100
 GRID_MIN = -5.0 / scale
 GRID_MAX = 5.0 / scale
 NUM_BINS = 200
-PHOTONS_PER_POSITION = 12
+PHOTONS_PER_POSITION = 10
 INITIAL_ENERGY = 30.0
 SCINTILLATION_YIELD = 54000
 
@@ -35,22 +35,70 @@ def read_hits_file(filepath):
         print(f"Файл не найден: {filepath}")
         return pd.DataFrame()
     
-    with open(filepath, 'r') as f:
-        lines = f.readlines()
-    
-    if not lines:
-        print(f"ОШИБКА: Файл {filepath} пуст!")
+    # Проверка размера файла
+    file_size = os.path.getsize(filepath)
+    if file_size < 100:
+        print(f"⚠️ Файл слишком маленький ({file_size} байт) — удаляем и пропускаем")
+        try:
+            os.remove(filepath)
+        except:
+            pass
         return pd.DataFrame()
     
+    # Пробуем разные кодировки
+    encodings = ['utf-8', 'latin-1', 'cp1251', 'iso-8859-1']
+    lines = None
+    used_encoding = None
+    
+    for enc in encodings:
+        try:
+            with open(filepath, 'r', encoding=enc) as f:
+                content = f.read()
+                # Проверяем, что это похоже на текстовый файл с табами
+                if '\t' in content or ' ' in content:
+                    lines = content.splitlines()
+                    used_encoding = enc
+                    break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    
+    # Если не удалось прочитать ни в одной кодировке, пробуем бинарный режим
+    if lines is None:
+        try:
+            with open(filepath, 'rb') as f:
+                raw = f.read()
+                # Оставляем только печатаемые ASCII символы + табы + переводы строк
+                clean_bytes = []
+                for b in raw:
+                    if (32 <= b <= 126) or b in (9, 10, 13):
+                        clean_bytes.append(b)
+                    else:
+                        clean_bytes.append(32)  # заменяем на пробел
+                clean_text = bytes(clean_bytes).decode('ascii')
+                lines = clean_text.splitlines()
+                print(f"✅ Файл прочитан в бинарном режиме, очищен от мусора")
+        except Exception as e:
+            print(f"❌ Ошибка чтения файла {filepath}: {e}")
+            return pd.DataFrame()
+    
+    if lines is None or not lines:
+        print(f"⚠️ Файл {filepath} пуст или нечитаем")
+        return pd.DataFrame()
+    
+    # Определяем заголовок
     first_line = lines[0].strip()
     start_row = 0
     
     if 'Energy_eV' in first_line and 'PosX_cm' in first_line and 'PosY_cm' in first_line:
         start_row = 1
     
+    # Обрабатываем строки
     for line_num, line in enumerate(lines[start_row:], start=start_row + 1):
         if not line.strip():
             continue
+        
+        # Очищаем от непечатаемых символов
+        line = ''.join(c for c in line if c.isprintable() or c in '\t\n\r')
         
         parts = line.strip().split('\t')
         
@@ -59,16 +107,37 @@ def read_hits_file(filepath):
                 energy = float(parts[0])
                 pos_x = float(parts[1])
                 pos_y = float(parts[2])
-                type_val = parts[3].lower()
+                type_val = parts[3].lower().strip()
                 event_id = int(parts[4])
                 data.append([energy, pos_x, pos_y, type_val, event_id])
             except (ValueError, IndexError) as e:
                 continue
+        elif len(parts) >= 5:
+            # Попытка восстановить данные, если разделитель - пробел
+            try:
+                parts2 = line.strip().split()
+                if len(parts2) >= 5:
+                    energy = float(parts2[0])
+                    pos_x = float(parts2[1])
+                    pos_y = float(parts2[2])
+                    type_val = parts2[3].lower().strip()
+                    event_id = int(parts2[4])
+                    data.append([energy, pos_x, pos_y, type_val, event_id])
+            except (ValueError, IndexError):
+                continue
     
     if not data:
+        print(f"⚠️ Не удалось распарсить данные из файла {filepath}")
+        # Удаляем повреждённый файл
+        try:
+            os.remove(filepath)
+            print(f"   Повреждённый файл удалён")
+        except:
+            pass
         return pd.DataFrame()
     
     df = pd.DataFrame(data, columns=['Energy_eV', 'PosX_cm', 'PosY_cm', 'Type', 'EventID'])
+    print(f"✅ Прочитано {len(df):,} записей из {os.path.basename(filepath)}")
     return df
 
 
@@ -222,7 +291,7 @@ def process_thickness(filepath, thickness_um):
         'thickness_um': thickness_um,
         'total_photons': int(np.sum(optical_counts)),
         'max_photons': int(np.max(optical_counts)),
-        'nonzero_pixels': np.sum(optical_counts > 0)
+        'nonzero_pixels': int(np.sum(optical_counts > 0))
     }
 
 
@@ -250,14 +319,23 @@ results_files.sort(key=lambda x: x[0])
 print(f"\nНайдено файлов: {len(results_files)}")
 print("Толщины:", [f[0] for f in results_files])
 
-# Обрабатываем каждый файл
+# Обрабатываем каждый файл с обработкой ошибок
 all_stats = []
 for thickness_um, filepath in results_files:
-    stats = process_thickness(filepath, thickness_um)
-    if stats:
-        all_stats.append(stats)
-    
-    # Очищаем память
+    try:
+        stats = process_thickness(filepath, thickness_um)
+        if stats:
+            all_stats.append(stats)
+    except Exception as e:
+        print(f"❌ Ошибка обработки файла {filepath}: {e}")
+        print(f"   Пропускаем толщину {thickness_um} мкм...")
+        # Удаляем повреждённый файл
+        try:
+            os.remove(filepath)
+            print(f"   Повреждённый файл удалён")
+        except:
+            pass
+        continue
     gc.collect()
 
 # ==================== СВОДНАЯ СТАТИСТИКА ====================
@@ -287,13 +365,8 @@ if all_stats:
     plt.ylabel('Общее количество зарегистрированных фотонов', fontsize=12)
     plt.title('Зависимость выхода фотонов от толщины CsI', fontsize=14)
     plt.grid(True, alpha=0.3)
-    plt.xscale('log')
     
     output_graph = os.path.join(OUTPUT_DIR, 'photons_vs_thickness.png')
     plt.savefig(output_graph, dpi=150)
     plt.close()
     print(f"✅ График сохранён: {output_graph}")
-
-print("\n" + "="*60)
-print(f"✅ ВСЕ ИЗОБРАЖЕНИЯ СОХРАНЕНЫ В ПАПКЕ: {OUTPUT_DIR}")
-print("="*60)

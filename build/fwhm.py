@@ -8,18 +8,119 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
+import os
 
-def measure_slit_width(csv_file, slit_y_mm, real_width_um):
+def read_hits_file_safe(filepath):
+    """
+    Надёжное чтение файла hits_data_*.csv с обработкой кодировок и бинарного мусора
+    """
+    if not os.path.exists(filepath):
+        return None
+    
+    # Проверка размера
+    file_size = os.path.getsize(filepath)
+    if file_size < 100:
+        print(f"⚠️ Файл слишком маленький ({file_size} байт) — удаляем")
+        os.remove(filepath)
+        return None
+    
+    # Пробуем разные кодировки
+    encodings = ['utf-8', 'latin-1', 'cp1251', 'iso-8859-1']
+    lines = None
+    
+    for enc in encodings:
+        try:
+            with open(filepath, 'r', encoding=enc) as f:
+                content = f.read()
+                if '\t' in content or ' ' in content:
+                    lines = content.splitlines()
+                    break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    
+    # Если не удалось, читаем как бинарный и очищаем
+    if lines is None:
+        try:
+            with open(filepath, 'rb') as f:
+                raw = f.read()
+                clean_bytes = []
+                for b in raw:
+                    if (32 <= b <= 126) or b in (9, 10, 13):
+                        clean_bytes.append(b)
+                    else:
+                        clean_bytes.append(32)
+                clean_text = bytes(clean_bytes).decode('ascii')
+                lines = clean_text.splitlines()
+        except Exception as e:
+            print(f"❌ Ошибка чтения бинарного файла: {e}")
+            return None
+    
+    if not lines:
+        return None
+    
+    # Определяем заголовок
+    first_line = lines[0].strip()
+    start_row = 0
+    if 'Energy_eV' in first_line and 'PosX_cm' in first_line and 'PosY_cm' in first_line:
+        start_row = 1
+    
+    data = []
+    for line in lines[start_row:]:
+        if not line.strip():
+            continue
+        # Очищаем от непечатаемых
+        line = ''.join(c for c in line if c.isprintable() or c in '\t\n\r')
+        parts = line.strip().split('\t')
+        if len(parts) == 5:
+            try:
+                energy = float(parts[0])
+                pos_x = float(parts[1])
+                pos_y = float(parts[2])
+                type_val = parts[3].lower().strip()
+                event_id = int(parts[4])
+                data.append([energy, pos_x, pos_y, type_val, event_id])
+            except:
+                continue
+        elif len(parts) >= 5:
+            # Попытка с пробелами
+            try:
+                parts2 = line.strip().split()
+                if len(parts2) >= 5:
+                    energy = float(parts2[0])
+                    pos_x = float(parts2[1])
+                    pos_y = float(parts2[2])
+                    type_val = parts2[3].lower().strip()
+                    event_id = int(parts2[4])
+                    data.append([energy, pos_x, pos_y, type_val, event_id])
+            except:
+                continue
+    
+    if not data:
+        return None
+    
+    df = pd.DataFrame(data, columns=['Energy_eV', 'PosX_cm', 'PosY_cm', 'Type', 'EventID'])
+    return df
+
+
+def measure_slit_width(df, slit_y_mm, real_width_um):
     """Измерение ширины горизонтальной щели по Y профилю"""
     
-    df = pd.read_csv(csv_file, sep='\t')
-    df_optical = df[df['Type'] == 'optical_photon']
+    if df is None or len(df) == 0:
+        return 0, 0, None, None
+    
+    df_optical = df[df['Type'] == 'optical_photon'].copy()
     df_optical = df_optical[df_optical['Energy_eV'] < 10]
+    
+    if len(df_optical) == 0:
+        return 0, 0, None, None
     
     # Профиль по Y (усредняем по X в центре)
     x_range = 0.02  # см (200 мкм) - берём только центр по X
     df_center = df_optical[(df_optical['PosX_cm'] > -x_range/2) & 
                             (df_optical['PosX_cm'] < x_range/2)]
+    
+    if len(df_center) == 0:
+        return 0, 0, None, None
     
     y_bins = np.linspace(-0.05, 0.05, 1000)  # высокое разрешение
     y_hist, y_edges = np.histogram(df_center['PosY_cm'], bins=y_bins)
@@ -39,7 +140,6 @@ def measure_slit_width(csv_file, slit_y_mm, real_width_um):
     y_idx = np.argmin(np.abs(y_centers - y_pos_cm))
     search_range = slice(max(0, y_idx-100), min(len(y_centers), y_idx+100))
     
-    # Проверяем, что есть данные в диапазоне
     if search_range.start >= search_range.stop:
         return 0, 0, None, None
     
@@ -68,14 +168,14 @@ def measure_slit_width(csv_file, slit_y_mm, real_width_um):
 
 
 # ==================== НОВЫЕ ПАРАМЕТРЫ ЩЕЛЕЙ ====================
-# При разрешении ~90 мкм, щели должны быть: 90, 110, 130 мкм
 SLITS = {
     '90um': {'y_pos_mm': -0.250, 'real_width_um': 90, 'color': 'red'},
     '110um': {'y_pos_mm': 0.000, 'real_width_um': 110, 'color': 'green'},
     '130um': {'y_pos_mm': 0.250, 'real_width_um': 130, 'color': 'blue'},
 }
 
-THICKNESSES = [10, 25, 50, 75, 100, 150, 200, 300, 500]
+# Актуальные толщины (соответствуют run_thickness.sh)
+THICKNESSES = [50, 100, 150, 200, 300, 500]
 
 # ==================== АНАЛИЗ ====================
 
@@ -88,10 +188,11 @@ results = {}
 for thickness in THICKNESSES:
     filepath = f"results/hits_data_{thickness}um.csv"
     
-    try:
-        df_test = pd.read_csv(filepath, sep='\t')
-    except:
-        print(f"\n❌ Файл не найден: {thickness} мкм")
+    # Читаем файл безопасно
+    df = read_hits_file_safe(filepath)
+    
+    if df is None:
+        print(f"\n❌ Не удалось прочитать файл для толщины {thickness} мкм")
         continue
     
     print(f"\n📊 Толщина CsI: {thickness} мкм")
@@ -100,7 +201,7 @@ for thickness in THICKNESSES:
     for slit_name, params in SLITS.items():
         try:
             width_um, max_val, y_centers, profile = measure_slit_width(
-                filepath, params['y_pos_mm'], params['real_width_um']
+                df, params['y_pos_mm'], params['real_width_um']
             )
             
             if width_um == 0:
