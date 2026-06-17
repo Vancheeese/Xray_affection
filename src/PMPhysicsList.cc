@@ -5,10 +5,11 @@
 #include "G4ProcessManager.hh"
 #include "G4Gamma.hh"
 #include "G4Electron.hh"
+#include "G4EmStandardPhysics_option4.hh"
 
 PMPhysicsList::PMPhysicsList()
 {
-    RegisterPhysics(new G4EmLivermorePhysics());
+    RegisterPhysics(new G4EmStandardPhysics_option4());
     RegisterPhysics(new G4OpticalPhysics());
 
 }

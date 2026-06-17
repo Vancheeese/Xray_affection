@@ -128,40 +128,71 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     }
     G4cout << "==================================\n" << G4endl;
 
-    // ========== СЦИНТИЛЛЯЦИОННАЯ ПЛАСТИНА ИЗ CsI ==========
+    // ========== СЦИНТИЛЛЯЦИОННАЯ ПЛАСТИНА ИЗ CsI(Tl) ==========
     G4double csiThickness = fCsIThickness;  // 10-500 мкм
     G4double csiSizeX = 10.0 / scale * cm;
     G4double csiSizeY = 10.0 / scale * cm;
 
-    // Создаём материал CsI (без изменений)
-    G4Material* csiMat = new G4Material("CsI", 4.51 * g / cm3, 2);
+    // Создаём материал CsI(Tl)
+    G4Material* csiMat = new G4Material("CsI_Tl", 4.51 * g / cm3, 2);
     csiMat->AddElement(nist->FindOrBuildElement("Cs"), 1);
     csiMat->AddElement(nist->FindOrBuildElement("I"), 1);
 
-    // Оптические свойства (без изменений)
+    // Оптические свойства CsI(Tl)
     G4MaterialPropertiesTable* csiMPT = new G4MaterialPropertiesTable();
 
-    const G4int nEnergies = 6;
-    G4double photonEnergies[nEnergies] = { 1.91 * eV, 2.07 * eV, 2.27 * eV, 2.48 * eV, 2.76 * eV, 3.10 * eV };
-    G4double refractiveIndex[nEnergies] = { 1.78, 1.79, 1.80, 1.81, 1.82, 1.83 };
-    csiMPT->AddProperty("RINDEX", photonEnergies, refractiveIndex, nEnergies);
+    // === 1. ПОКАЗАТЕЛЬ ПРЕЛОМЛЕНИЯ (исправлен: константа 1.79 на длине волны 550 нм) ===
+    const G4int nRI = 2;
+    G4double riEnergies[] = { 1.77 * eV, 4.13 * eV };  // 700 nm - 300 nm
+    G4double refractiveIndex[] = { 1.79, 1.79 };       // Константа в рабочем диапазоне
+    csiMPT->AddProperty("RINDEX", riEnergies, refractiveIndex, nRI);
 
-    csiMPT->AddConstProperty("SCINTILLATIONYIELD", 54000.0 / MeV);
-    csiMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 1000.0 * ns);
+    // === 2. ДЛИНА ПОГЛОЩЕНИЯ (исправлена: 30 см вместо 1 см) ===
+    const G4int nAbs = 2;
+    G4double absEnergies[] = { 1.77 * eV, 4.13 * eV };
+    G4double absLength[] = { 30.0 * cm, 30.0 * cm };   // 30 см - реалистичное значение
+    csiMPT->AddProperty("ABSLENGTH", absEnergies, absLength, nAbs);
+
+    // === 3. СЦИНТИЛЛЯЦИОННЫЕ СВОЙСТВА ===
+    csiMPT->AddConstProperty("SCINTILLATIONYIELD", 52000.0 / MeV);  // ~52000 фотонов/МэВ
     csiMPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
 
-    const G4int nScint = 7;
-    G4double scintEnergies[nScint] = { 2.07 * eV, 2.18 * eV, 2.30 * eV, 2.43 * eV, 2.58 * eV, 2.76 * eV, 2.95 * eV };
-    G4double scintIntensity[nScint] = { 0.05, 0.2, 0.5, 0.8, 1.0, 0.4, 0.1 };
-    csiMPT->AddProperty("SCINTILLATIONCOMPONENT1", scintEnergies, scintIntensity, nScint);
+    // Быстрая компонента (малая доля, ~5-10%)
+    csiMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 68.0 * ns);
+    csiMPT->AddConstProperty("SCINTILLATIONYIELD1", 0.07);  // 7% от общего выхода
 
-    // Длина поглощения
-    const G4int nAbs = 2;
-    G4double absEnergies[] = { 2.0 * eV, 3.1 * eV };
-    G4double absLength1 = std::max(50.0 * um, csiThickness * 0.2);
-    G4double absLength2 = std::max(50.0 * um, csiThickness * 0.2);
-    G4double absLength[] = { absLength1, absLength2 };
-    csiMPT->AddProperty("ABSLENGTH", absEnergies, absLength, nAbs);
+    // Медленная компонента (основная, 90-95%)
+    csiMPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 950.0 * ns);
+    csiMPT->AddConstProperty("SCINTILLATIONYIELD2", 0.93);   // 93% от общего выхода
+
+    // === 4. СПЕКТР ИСПУСКАНИЯ (пик при 550 нм = 2.25 eV) ===
+    const G4int nScint = 9;
+    // Энергии от 2.0 eV (620 nm) до 2.9 eV (427 nm) с пиком при 2.25 eV (550 nm)
+    G4double scintEnergies[] = {
+        2.00 * eV,  // 620 nm - хвост
+        2.10 * eV,  // 590 nm
+        2.20 * eV,  // 564 nm
+        2.25 * eV,  // 551 nm - ПИК
+        2.30 * eV,  // 539 nm
+        2.40 * eV,  // 517 nm
+        2.50 * eV,  // 496 nm
+        2.70 * eV,  // 459 nm
+        2.90 * eV   // 427 nm - хвост
+    };
+    G4double scintIntensity[] = {
+        0.10,   // хвост в красной области
+        0.40,
+        0.85,
+        1.00,   // пик
+        0.90,
+        0.60,
+        0.30,
+        0.15,
+        0.05    // хвост в синей области
+    };
+    csiMPT->AddProperty("SCINTILLATIONCOMPONENT1", scintEnergies, scintIntensity, nScint);
+    // Для медленной компоненты используем тот же спектр
+    csiMPT->AddProperty("SCINTILLATIONCOMPONENT2", scintEnergies, scintIntensity, nScint);
 
     csiMat->SetMaterialPropertiesTable(csiMPT);
 
@@ -174,21 +205,21 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, 0. * m, csiPosZ),
         logicCsI, "physCsI", logicWorld, false, 2, checkOverlaps);
 
-    //// ========== ОТРАЖАТЕЛЬ (без изменений) ==========
-    //G4OpticalSurface* reflector = new G4OpticalSurface("CsI_Reflector");
-    //reflector->SetType(dielectric_metal);
-    //reflector->SetModel(unified);
-    //reflector->SetFinish(polished);
-    //reflector->SetPolish(1.0);
+    // ========== ОТРАЖАТЕЛЬ (диффузный или зеркальный) ==========
+    G4OpticalSurface* reflector = new G4OpticalSurface("CsI_Reflector");
+    reflector->SetType(dielectric_metal);      // Оставляем как есть
+    reflector->SetModel(unified);
+    reflector->SetFinish(polished);            // Или ground для диффузного отражения
+    reflector->SetPolish(0.8);                 // Не идеально полированный
 
-    //G4MaterialPropertiesTable* reflectorMPT = new G4MaterialPropertiesTable();
-    //const G4int nRefl = 2;
-    //G4double reflEnergies[] = { 2.0 * eV, 3.1 * eV };
-    //G4double reflectivity[] = { 0.90, 0.90 };
-    //reflectorMPT->AddProperty("REFLECTIVITY", reflEnergies, reflectivity, nRefl);
-    //reflector->SetMaterialPropertiesTable(reflectorMPT);
+    G4MaterialPropertiesTable* reflectorMPT = new G4MaterialPropertiesTable();
+    const G4int nRefl = 2;
+    G4double reflEnergies[] = { 1.77 * eV, 4.13 * eV };
+    G4double reflectivity[] = { 0.95, 0.95 };  // 95% отражения (Teflon имеет ~95-98%)
+    reflectorMPT->AddProperty("REFLECTIVITY", reflEnergies, reflectivity, nRefl);
+    reflector->SetMaterialPropertiesTable(reflectorMPT);
 
-    //new G4LogicalSkinSurface("CsI_Reflector_Surface", logicCsI, reflector);
+    new G4LogicalSkinSurface("CsI_Reflector_Surface", logicCsI, reflector);
 
     // Визуализация CsI
     G4VisAttributes* csiVisAtt = new G4VisAttributes(G4Color(0.0, 1.0, 0.0, 0.6));

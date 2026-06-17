@@ -29,6 +29,8 @@ public:
     void SetCsIThickness(G4double thickness) { fCsIThickness = thickness; }
     PMDetectorConstruction();
     virtual ~PMDetectorConstruction();
+    G4double GetCsIThickness() const { return fCsIThickness; }
+
 
     virtual G4VPhysicalVolume *Construct();
 
@@ -36,6 +38,7 @@ private:
     G4LogicalVolume *logicDetector;
     G4LogicalVolume* logicCsI = nullptr;  // Добавить эту строку
     G4double fCsIThickness = 50 * um;  // Толщина сцинтиллятора по умолчанию
+  
 
     virtual void ConstructSDandField();
 };

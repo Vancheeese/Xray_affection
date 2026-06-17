@@ -10,7 +10,7 @@
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelX(0);
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelY(0);
 std::atomic<G4int> PMPrimaryGenerator::fParticlesEmittedInCurrentPixel(0);
-const G4int PMPrimaryGenerator::fParticlesPerPixel = 12;  // N частиц на точку
+const G4int PMPrimaryGenerator::fParticlesPerPixel = 10;  // N частиц на точку
 const G4int PMPrimaryGenerator::fGridSize = 100;
 std::atomic<G4bool> PMPrimaryGenerator::fIsFinished(false);
 
@@ -119,7 +119,7 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     // Генерируем событие только если не завершили
     if (shouldGenerate && !fIsFinished.load()) {
         // Используем ТУ ЖЕ САМУЮ формулу, что и в SensitiveDetector
-        const G4double range = 5.0/100 * cm;   
+        const G4double range = 5.0/50 * cm;   
         const G4int numBins = fGridSize;           // 25 бинов
 
         // Вычисляем центр бина детектора

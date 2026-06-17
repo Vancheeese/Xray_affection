@@ -5,6 +5,6 @@ build/*
 !build/energy.mac
 !build/vis.mac
 !build/run_thickness.sh
-!build/v2.py
-!build/mtf.py
+!build/fwhm.py
+!build/oimg.py
 .vscode
