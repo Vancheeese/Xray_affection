@@ -310,6 +310,30 @@ src/PMSensitiveDetector.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.s
 .PHONY : src/PMSensitiveDetector.cc.s
 
+src/global_parameters.o: src/global_parameters.cc.o
+.PHONY : src/global_parameters.o
+
+# target to build an object file
+src/global_parameters.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/global_parameters.cc.o
+.PHONY : src/global_parameters.cc.o
+
+src/global_parameters.i: src/global_parameters.cc.i
+.PHONY : src/global_parameters.i
+
+# target to preprocess a source file
+src/global_parameters.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/global_parameters.cc.i
+.PHONY : src/global_parameters.cc.i
+
+src/global_parameters.s: src/global_parameters.cc.s
+.PHONY : src/global_parameters.s
+
+# target to generate assembly for a file
+src/global_parameters.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/global_parameters.cc.s
+.PHONY : src/global_parameters.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -341,6 +365,9 @@ help:
 	@echo "... src/PMSensitiveDetector.o"
 	@echo "... src/PMSensitiveDetector.i"
 	@echo "... src/PMSensitiveDetector.s"
+	@echo "... src/global_parameters.o"
+	@echo "... src/global_parameters.i"
+	@echo "... src/global_parameters.s"
 .PHONY : help
 
 

@@ -23,7 +23,7 @@ public:
 private:
     G4ParticleGun *fParticleGun;
     
-    // Используем атомарные переменные для синхронизации потоков
+    // Global pixel position for thread synchronization
     static std::atomic<G4int> fGlobalPixelX;
     static std::atomic<G4int> fGlobalPixelY;
     static std::atomic<G4int> fParticlesEmittedInCurrentPixel;

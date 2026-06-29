@@ -1,4 +1,5 @@
-
 /run/initialize
-/vis/disable
+
+# Автоматически сгенерировано: gridSize=100, particlesPerPixel=10
+# Общее количество событий = 100² × 10 = 100,000
 /run/beamOn 100000

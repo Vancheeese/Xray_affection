@@ -36,8 +36,8 @@ public:
 
 private:
     G4LogicalVolume *logicDetector;
-    G4LogicalVolume* logicCsI = nullptr;  // Добавить эту строку
-    G4double fCsIThickness = 50 * um;  // Толщина сцинтиллятора по умолчанию
+    G4LogicalVolume* logicCsI = nullptr;  // volume for CsI scintillator
+    G4double fCsIThickness = 20 * um;  // default CsI thickness
   
 
     virtual void ConstructSDandField();

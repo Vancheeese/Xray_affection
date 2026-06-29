@@ -402,6 +402,7 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ThreeVector.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Types.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4OpticalSurface.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Physics2DVector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Physics2DVector.icc \
@@ -419,4 +420,6 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4BooleanSolid.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4DisplacedSolid.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VBooleanProcessor.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4BooleanSolid.icc
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4BooleanSolid.icc \
+ /home/iptch/geant4/new/include/global_parameters.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/globals.hh

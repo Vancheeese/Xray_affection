@@ -6,9 +6,10 @@
 #include <cmath>
 #include "G4RunManager.hh"
 #include "G4Event.hh"
+#include "G4Threading.hh"
 
+G4Mutex PMSensitiveDetector::closeMutex = G4MUTEX_INITIALIZER;
 std::ofstream PMSensitiveDetector::outFile;
-std::mutex PMSensitiveDetector::fileMutex;
 
 PMSensitiveDetector::PMSensitiveDetector(G4String name)
     : G4VSensitiveDetector(name)
@@ -17,7 +18,7 @@ PMSensitiveDetector::PMSensitiveDetector(G4String name)
     if (!fileOpened) {
         outFile.open("hits_data.csv");
         if (outFile.is_open()) {
-            outFile << "Energy_eV\tPosX_cm\tPosY_cm\tType\tEventID\n";
+            outFile << "Energy_eV\tPosX_um\tPosY_um\n";
             G4cout << "File hits_data.csv opened successfully" << G4endl;
         }
         else {
@@ -31,9 +32,12 @@ PMSensitiveDetector::~PMSensitiveDetector()
 {
     static bool fileClosed = false;
     if (!fileClosed && outFile.is_open()) {
-        outFile.close();
-        G4cout << "File hits_data.csv closed" << G4endl;
-        fileClosed = true;
+        G4AutoLock al(&closeMutex);
+        if (!fileClosed) {
+            outFile.close();
+            G4cout << "File hits_data.csv closed" << G4endl;
+            fileClosed = true;
+        }
     }
 }
 
@@ -57,12 +61,14 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
         G4ThreeVector hitPos = postStepPoint->GetPosition();
 
         if (outFile.is_open()) {
-            std::lock_guard<std::mutex> lock(fileMutex);
+            G4AutoLock lock(&closeMutex);
             outFile << track->GetKineticEnergy() / eV << "\t"
-                << hitPos.x() / cm << "\t"
-                << hitPos.y() / cm << "\t"
-                << "optical_photon\t"
-                << G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID() << "\n";
+                << hitPos.x() / um << "\t"
+                << hitPos.y() / um
+                // << "\t"
+                // << "optical_photon\t"
+                // << G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID()
+                << "\n";
         }
 
         // ПРИНУДИТЕЛЬНО поглощаем фотон (имитация 100% квантовой эффективности)

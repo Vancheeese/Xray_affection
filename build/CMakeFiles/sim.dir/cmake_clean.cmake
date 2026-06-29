@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sim.dir/src/PMRunAction.cc.o.d"
   "CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o"
   "CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o.d"
+  "CMakeFiles/sim.dir/src/global_parameters.cc.o"
+  "CMakeFiles/sim.dir/src/global_parameters.cc.o.d"
   "sim"
   "sim.pdb"
 )

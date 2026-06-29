@@ -497,4 +497,5 @@ CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/rundefs.hh \
  /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
  /usr/include/c++/13/bits/list.tcc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AutoLock.hh
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4AutoLock.hh \
+ /home/iptch/geant4/new/include/global_parameters.hh

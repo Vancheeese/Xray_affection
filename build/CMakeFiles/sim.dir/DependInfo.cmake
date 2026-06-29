@@ -15,6 +15,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/iptch/geant4/new/src/PMPrimaryGenerator.cc" "CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o" "gcc" "CMakeFiles/sim.dir/src/PMPrimaryGenerator.cc.o.d"
   "/home/iptch/geant4/new/src/PMRunAction.cc" "CMakeFiles/sim.dir/src/PMRunAction.cc.o" "gcc" "CMakeFiles/sim.dir/src/PMRunAction.cc.o.d"
   "/home/iptch/geant4/new/src/PMSensitiveDetector.cc" "CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o" "gcc" "CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o.d"
+  "/home/iptch/geant4/new/src/global_parameters.cc" "CMakeFiles/sim.dir/src/global_parameters.cc.o" "gcc" "CMakeFiles/sim.dir/src/global_parameters.cc.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

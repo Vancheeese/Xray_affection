@@ -7,9 +7,6 @@
 
 PMRunAction::PMRunAction()
 {
-    
-    G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-
 }
 
 PMRunAction::~PMRunAction()

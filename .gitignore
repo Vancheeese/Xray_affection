@@ -7,4 +7,9 @@ build/*
 !build/run_thickness.sh
 !build/fwhm.py
 !build/oimg.py
+!build/build_xray_image.py
+!build/generate_mac.py
+!build/oimg.py
+!build/run_batch_thickness.sh
+!build/snr_analysis.py
 .vscode

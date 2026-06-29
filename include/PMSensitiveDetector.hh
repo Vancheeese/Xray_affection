@@ -5,6 +5,7 @@
 #include "G4ThreeVector.hh"
 #include <fstream>
 #include <mutex>
+#include "G4Types.hh"
 
 class PMSensitiveDetector : public G4VSensitiveDetector
 {
@@ -18,7 +19,7 @@ public:
 
 private:
     static std::ofstream outFile;
-    static std::mutex fileMutex;
+    static G4Mutex closeMutex;
 
     // Вспомогательные функции для дискретизации
     int GetDiscreteIndex(G4double position, G4double size, int numBins);

@@ -5,13 +5,13 @@
 #include "Randomize.hh"
 #include "G4RunManager.hh"
 #include "G4AutoLock.hh"
+#include "global_parameters.hh"
 #include <iostream>
 
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelX(0);
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelY(0);
 std::atomic<G4int> PMPrimaryGenerator::fParticlesEmittedInCurrentPixel(0);
-const G4int PMPrimaryGenerator::fParticlesPerPixel = 10;  // N частиц на точку
-const G4int PMPrimaryGenerator::fGridSize = 100;
+const G4int PMPrimaryGenerator::fParticlesPerPixel = 1;  // N particles per pixel
 std::atomic<G4bool> PMPrimaryGenerator::fIsFinished(false);
 
 G4double energy = 0.;
@@ -25,13 +25,13 @@ PMPrimaryGenerator::PMPrimaryGenerator()
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
 
-    // Начальная настройка (временная)
+    // ????????? ????????? (?????????)
     G4ThreeVector pos(0., 0., 0.);
     G4ThreeVector mom(0., 0., 1.);
 
     fParticleGun->SetParticlePosition(pos);
     fParticleGun->SetParticleMomentumDirection(mom);
-    fParticleGun->SetParticleEnergy(30. * keV);
+    fParticleGun->SetParticleEnergy(25. * keV);
     fParticleGun->SetParticleDefinition(particle);
 }
 
@@ -56,18 +56,18 @@ void PMPrimaryGenerator::SetSourcePosition(G4double x, G4double y)
     fParticleGun->SetParticlePosition(pos);
 }
 
-// Функция для получения центра бина детектора по индексу
-// Совпадает с формулой из SensitiveDetector
+// ??????? ??? ????????? ?????? ???? ????????? ?? ???????
+// ????????? ? ???????? ?? SensitiveDetector
 G4double GetDetectorBinCenter(int index, G4double size, int numBins)
 {
-    G4double step = (2.0 * size) / numBins;  // step = 10 см / 25 = 0.4 см
+    G4double step = (2.0 * size) / numBins;  // step = 10 ?? / 25 = 0.4 ??
     G4double position = -size + (index + 0.5) * step;
     return position;
 }
 
 void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
 {
-    // Быстрая проверка флага
+    // ??????? ???????? ?????
     if (fIsFinished.load()) {
         return;
     }
@@ -76,7 +76,7 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     G4bool shouldGenerate = false;
     G4bool needAbort = false;
 
-    // Критическая секция для обновления позиции
+    // ??????????? ?????? ??? ?????????? ???????
     {
         G4AutoLock lock(&pixelMutex);
 
@@ -87,21 +87,21 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         G4int particlesInPixel = fParticlesEmittedInCurrentPixel.load();
 
         if (particlesInPixel >= fParticlesPerPixel) {
-            // Переходим к следующему пикселю
+            // ????????? ? ?????????? ???????
             fParticlesEmittedInCurrentPixel = 0;
             currentX++;
 
-            if (currentX >= fGridSize) {
+            if (currentX >= gridSize) {
                 currentX = 0;
                 currentY++;
 
-                if (currentY >= fGridSize) {
+                if (currentY >= gridSize) {
                     fIsFinished = true;
                     G4cout << "Thread " << G4Threading::G4GetThreadId()
                         << ": All pixels processed." << G4endl;
                     needAbort = true;
                     lock.unlock();
-                    // Запрашиваем остановку
+                    // ??????????? ?????????
                     G4RunManager::GetRunManager()->AbortRun();
                     return;
                 }
@@ -111,28 +111,28 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
             fGlobalPixelY = currentY;
         }
 
-        // Увеличиваем счетчик
+        // ??????????? ???????
         fParticlesEmittedInCurrentPixel++;
         shouldGenerate = true;
     }
 
-    // Генерируем событие только если не завершили
+    // ?????????? ??????? ?????? ???? ?? ?????????
     if (shouldGenerate && !fIsFinished.load()) {
-        // Используем ТУ ЖЕ САМУЮ формулу, что и в SensitiveDetector
-        const G4double range = 5.0/50 * cm;   
-        const G4int numBins = fGridSize;           // 25 бинов
+        // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‡Р°СЃС‚РёС† РїРѕ СЂР°Р·РјРµСЂСѓ РѕР±Р»Р°СЃС‚Рё, РєР°Рє Рё РІ SensitiveDetector
+        const G4double range = pixelSize * gridSize;   
+        const G4int numBins = gridSize;
 
-        // Вычисляем центр бина детектора
+        // Р“РµРЅРµСЂРёСЂСѓРµРј С‡Р°СЃС‚РёС†С‹ РїРѕ СЂР°Р·РјРµСЂСѓ РѕР±Р»Р°СЃС‚Рё
         G4double x = GetDetectorBinCenter(currentX, range, numBins);
         G4double y = GetDetectorBinCenter(currentY, range, numBins);
 
         SetSourcePosition(x, y);
         energy = fParticleGun->GetParticleEnergy();
 
-        // Генерируем вершину
+        // ?????????? ???????
         fParticleGun->GeneratePrimaryVertex(anEvent);
 
-        // Логирование
+        // ???????????
         static G4ThreadLocal G4int lastPixelX = -1;
         static G4ThreadLocal G4int lastPixelY = -1;
 

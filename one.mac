@@ -1,0 +1,9 @@
+/run/numberOfThreads 12
+/run/initialize
+
+# Увеличиваем cut — уменьшает количество вторичных частиц и ускоряет трекинг
+/radioactive/setCut 1 * um
+/em/minRange 1 * um
+
+# 1 млн событий — хороший баланс скорость/статистика
+/run/beamOn 1000000
