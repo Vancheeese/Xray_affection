@@ -13,7 +13,7 @@ RESULTS_DIR="$PROJECT_DIR/results"
 HEADER_FILE="$SRC_DIR/PMDetectorConstruction.hh"
 
 # Список толщин для проверки (в мкм)
-THICKNESSES=(20 100 300)
+THICKNESSES=(20 25 30 35 40 45 50)
 
 # Функция для выполнения шага с повтором при ошибке
 run_step() {

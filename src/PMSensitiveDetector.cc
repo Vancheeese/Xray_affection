@@ -52,7 +52,7 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     G4Track* track = aStep->GetTrack();
     G4ParticleDefinition* particle = track->GetDefinition();
 
-    // Регистрируем ВСЕ фотоны, попавшие в детектор
+    // Регистрируем оптические фотоны (сцинтилляция)
     if (particle == G4OpticalPhoton::Definition()) {
         eventPhotonCount++;
 
@@ -65,9 +65,6 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
             outFile << track->GetKineticEnergy() / eV << "\t"
                 << hitPos.x() / um << "\t"
                 << hitPos.y() / um
-                // << "\t"
-                // << "optical_photon\t"
-                // << G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID()
                 << "\n";
         }
 

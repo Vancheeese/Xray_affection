@@ -17,28 +17,23 @@
 #include "G4VisAttributes.hh"
 #include "G4Color.hh"
 #include "G4SDManager.hh"
-
-#include "PMSensitiveDetector.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalBorderSurface.hh"
-#include "G4LogicalSkinSurface.hh"
+
+#include "PMSensitiveDetector.hh"
 
 class PMDetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-    void SetCsIThickness(G4double thickness) { fCsIThickness = thickness; }
     PMDetectorConstruction();
     virtual ~PMDetectorConstruction();
-    G4double GetCsIThickness() const { return fCsIThickness; }
-
 
     virtual G4VPhysicalVolume *Construct();
 
 private:
     G4LogicalVolume *logicDetector;
     G4LogicalVolume* logicCsI = nullptr;  // volume for CsI scintillator
-    G4double fCsIThickness = 20 * um;  // default CsI thickness
-  
+    G4double fCsIThickness = 100 * um;  // default CsI thickness
 
     virtual void ConstructSDandField();
 };

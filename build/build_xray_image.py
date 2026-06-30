@@ -198,11 +198,78 @@ def build_image(df, params, output_prefix='xray'):
              y_edges=y_edges)
     print(f"Сохранено: {output_prefix}_attenuation_data.npz")
     
+    # ==================== Вариант 3: Базовая геометрия (золотые полоски) ====================
+    print("\nСтроим базовую геометрию (золотые полоски)...")
+    
+    slit_width = params['slitWidth']
+    slit_period = slit_width + slit_width  # шаг = ширина + зазор (равный ширине)
+    num_slits = int(lead_size / slit_period) if slit_period > 0 else 0
+    total_width = num_slits * slit_period
+    start_x = -total_width / 2.0 + slit_width / 2.0
+    
+    # Создаём бинарную маску: 1 = золото, 0 = зазор
+    # Полоски ориентированы вдоль оси Y
+    geometry = np.zeros((grid_size, grid_size), dtype=float)
+    
+    x_edges_arr = np.linspace(x_range[0], x_range[1], grid_size + 1)
+    x_centers = (x_edges_arr[:-1] + x_edges_arr[1:]) / 2.0
+    
+    for i in range(num_slits):
+        slit_center_x = start_x + i * slit_period
+        slit_left = slit_center_x - slit_width / 2.0
+        slit_right = slit_center_x + slit_width / 2.0
+        
+        mask_x = (x_centers >= slit_left) & (x_centers < slit_right)
+        geometry[:, mask_x] = 1.0  # полоска на всю длину по Y
+    
+    # Сглаживание для визуализации
+    geometry_smooth = gaussian_filter(geometry, sigma=0.5)
+    
+    # Сохраняем изображение геометрии
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    
+    im = ax.imshow(
+        geometry_smooth,
+        origin='lower',
+        extent=[x_range[0], x_range[1], y_range[0], y_range[1]],
+        cmap='Greys',
+        interpolation='nearest',
+        vmin=0,
+        vmax=1
+    )
+    
+    ax.set_xlabel('X, мкм', fontsize=14)
+    ax.set_ylabel('Y, мкм', fontsize=14)
+    ax.set_title(f'Базовая геометрия: золотые полоски\n'
+                 f'Полосок: {num_slits}, ширина: {slit_width} мкм, '
+                 f'шаг: {slit_period} мкм', fontsize=16)
+    
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label('Золото (1) / Пустота (0)', fontsize=12)
+    
+    plt.tight_layout()
+    plt.savefig(f'{output_prefix}_geometry.png', dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
+    print(f"Сохранено: {output_prefix}_geometry.png")
+    
+    # Сохраняем данные геометрии
+    np.savez(f'{output_prefix}_geometry_data.npz',
+             geometry=geometry,
+             geometry_smooth=geometry_smooth,
+             x_edges=x_edges,
+             y_edges=y_edges,
+             num_slits=num_slits,
+             slit_width=slit_width,
+             slit_period=slit_period,
+             start_x=start_x)
+    print(f"Сохранено: {output_prefix}_geometry_data.npz")
+    
     # ==================== Статистика ====================
     print(f"\n{'='*50}")
     print(f"Статистика:")
     print(f"  Параметров: pixelSize={pixel_size} мкм, gridSize={grid_size}")
     print(f"  Размер области: {lead_size} мкм x {lead_size} мкм")
+    print(f"  Полосок: {num_slits}, ширина: {slit_width} мкм, шаг: {slit_period} мкм")
     print(f"  Всего фотонов: {len(df_optical):,}")
     print(f"  Ненулевых пикселей (counts): {np.sum(counts > 0):,}")
     print(f"  Максимум counts: {int(np.max(counts))}")

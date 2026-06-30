@@ -18,30 +18,17 @@ PMDetectorConstruction::~PMDetectorConstruction()
 
 G4VPhysicalVolume* PMDetectorConstruction::Construct()
 {
-
     G4double scale = 100.;
-
     G4bool checkOverlaps = true;
 
-    G4double density = universe_mean_density;                //from PhysicalConstants.h
+    G4double density = universe_mean_density;
     G4double pressure = 1.e-19 * pascal;
     G4double temperature = 0.1 * kelvin;
     new G4Material("Galactic", 1., 1.01 * g / mole, density,
         kStateGas, temperature, pressure);
 
-
     G4NistManager* nist = G4NistManager::Instance();
     G4Material* worldMat = nist->FindOrBuildMaterial("Galactic");
-    G4Material* leadMat = nist->FindOrBuildMaterial(material);
-    G4Material* detMat = nist->FindOrBuildMaterial("G4_SODIUM_IODIDE");
-
-    // Оптические свойства для вакуума
-    G4MaterialPropertiesTable* vacMPT = new G4MaterialPropertiesTable();
-    const G4int nVac = 2;
-    G4double vacEnergies[] = { 1.0 * eV, 6.0 * eV };
-    G4double vacRindex[] = { 1.0, 1.0 };
-    vacMPT->AddProperty("RINDEX", vacEnergies, vacRindex, nVac);
-    worldMat->SetMaterialPropertiesTable(vacMPT);
 
     G4double xWorld = 3./scale * m;
     G4double yWorld = 3./scale * m;
@@ -51,47 +38,50 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
     G4VPhysicalVolume* physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0);
 
-    // ========== ЗОЛОТЫЕ ПОЛОСКИ ВМЕСТО МЕДНОЙ ПЛАСТИНЫ ==========
+    // ========== ЗОЛОТЫЕ ПОЛОСКИ (объект для ослабления рентгена) ==========
     G4double leadSize = pixelSize * gridSize;
-    G4double slitThickness = slitWidth;  // толщина = ширине
-    G4double slitPeriod = slitWidth + slitWidth;  // шаг полоски
-    G4double slitLengthY = leadSize;  // теперь на всю длину и ширину
+    G4double slitThickness = slitWidth;
+    G4double slitPeriod = slitWidth + slitWidth;
+    G4double slitLengthY = leadSize;
 
-    // Количество полосок
     G4int numSlits = (G4int)(leadSize / slitPeriod);
 
-    // Рассчитываем общую ширину для центровки
     G4double totalWidth = numSlits * slitPeriod;
     G4double startX = -totalWidth / 2.0 + slitWidth / 2.0;
 
-    // Материал золота
     G4Material* goldMat = nist->FindOrBuildMaterial("G4_Au");
 
-    // Создаём одну полоску
     G4Box* solidSlit = new G4Box("solidSlit",
         0.5 * slitWidth,
         0.5 * slitLengthY,
         0.5 * slitThickness);
 
-    // Создаём логический объём
     G4LogicalVolume* logicLead = new G4LogicalVolume(solidSlit, goldMat, "logicLead");
 
-    // Визуализация (золотой цвет)
     G4VisAttributes* leadVisAtt = new G4VisAttributes(G4Color(1.0, 0.84, 0.0, 0.8));
     leadVisAtt->SetForceSolid(true);
     logicLead->SetVisAttributes(leadVisAtt);
 
-    // Отладочная информация
     G4cout << "\n=== ЗОЛОТЫЕ ПОЛОСКИ ===" << G4endl;
     G4cout << "Размер области: " << leadSize / mm << " x " << leadSize / mm << " mm" << G4endl;
     G4cout << "Полосок: " << numSlits << G4endl;
     G4cout << "Ширина полоски: " << slitWidth / um << " мкм" << G4endl;
     G4cout << "Толщина: " << slitThickness / um << " мкм" << G4endl;
     G4cout << "Зазор между полосками: " << slitWidth / um << " мкм" << G4endl;
-    G4cout << "Длина полоски по Y: " << slitLengthY / um << " мкм" << G4endl;
     G4cout << "========================\n" << G4endl;
 
-    // ========== ВЫБОР СЦИНТИЛЛЯТОРА ==========
+    // ========== ЗОЛОТЫЕ ПОЛОСКИ ==========
+    // Золотые полоски на Z = 0, рентген идёт в +Z направлении
+    G4double goldPosZ = 0.0;
+    G4double offsetY = (leadSize - slitLengthY) / 2.0;
+
+    for (G4int i = 0; i < numSlits; ++i) {
+        G4double x = startX + i * slitPeriod;
+        new G4PVPlacement(0, G4ThreeVector(x, offsetY, goldPosZ),
+            logicLead, "physSlit" + std::to_string(i), logicWorld, false, i, false);
+    }
+
+    // ========== СЦИНТИЛЛЯТОР (CsI/Tl или YAG/Tb) ==========
     G4double csiThickness = fCsIThickness;
     G4double csiSizeX = pixelSize * gridSize;
     G4double csiSizeY = pixelSize * gridSize;
@@ -182,45 +172,15 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4Box* solidCsI = new G4Box("solidCsI", 0.5 * csiSizeX, 0.5 * csiSizeY, 0.5 * csiThickness);
     logicCsI = new G4LogicalVolume(solidCsI, csiMat, "logicCsI");
 
-    // Позиция CsI: на расстоянии 10 см от нуля по Z
-    G4double csiPosZ = 10.0 * cm;
-    G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, 0. * m, csiPosZ),
+    // Позиция CsI: ПОСЛЕ золотых полосок (золото заканчивается на Z = slitThickness)
+    G4double csiPosZ = goldPosZ + slitThickness + (csiThickness / 2.0);
+    G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, csiPosZ),
         logicCsI, "physCsI", logicWorld, false, 2, checkOverlaps);
-
-    // ========== ОТРАЖАТЕЛЬ (диффузный или зеркальный) ==========
-    G4OpticalSurface* reflector = new G4OpticalSurface("CsI_Reflector");
-    reflector->SetType(dielectric_metal);      // Оставляем как есть
-    reflector->SetModel(unified);
-    reflector->SetFinish(polished);            // Или ground для диффузного отражения
-    reflector->SetPolish(0.8);                 // Не идеально полированный
-
-    G4MaterialPropertiesTable* reflectorMPT = new G4MaterialPropertiesTable();
-    const G4int nRefl = 2;
-    G4double reflEnergies[] = { 1.77 * eV, 4.13 * eV };
-    G4double reflectivity[] = { 0.95, 0.95 };  // 95% отражения (Teflon имеет ~95-98%)
-    reflectorMPT->AddProperty("REFLECTIVITY", reflEnergies, reflectivity, nRefl);
-    reflector->SetMaterialPropertiesTable(reflectorMPT);
-
-    //new G4LogicalSkinSurface("CsI_Reflector_Surface", logicCsI, reflector);
 
     // Визуализация CsI
     G4VisAttributes* csiVisAtt = new G4VisAttributes(G4Color(0.0, 1.0, 0.0, 0.6));
     csiVisAtt->SetForceSolid(true);
     logicCsI->SetVisAttributes(csiVisAtt);
-
-    // ========== ЗОЛОТЫЕ ПОЛОСКИ ПРЯМО НА СЦИНТИЛЛЯТОРЕ ==========
-    // Размещаем полоски вплотную к верхней грани CsI, строго над ним
-    G4double goldPosZ = csiPosZ + csiThickness / 2.0 + 1.0 * nm;  // 1 нм зазор
-
-    // Центрируем полоски по Y относительно CsI
-    G4double offsetY = (csiSizeY - slitLengthY) / 2.0;
-
-    for (G4int i = 0; i < numSlits; ++i) {
-        G4double x = startX + i * slitPeriod;
-        // checkOverlaps=false, так как полоски вплотную к CsI
-        new G4PVPlacement(0, G4ThreeVector(x, offsetY, goldPosZ),
-            logicLead, "physSlit" + std::to_string(i), logicWorld, false, i, false);
-    }
 
     // ========== ОПТИЧЕСКИЙ КЛЕЙ ==========
     G4Material* opticalGlue = new G4Material("OpticalGlue", 1.2 * g / cm3, 1);
@@ -240,15 +200,14 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4LogicalVolume* logicGlue = new G4LogicalVolume(solidGlue, opticalGlue, "logicGlue");
 
     G4double gluePosZ = csiPosZ + (csiThickness / 2.0) + (glueThickness / 2.0);
-    G4double glueOffsetY = (csiSizeY - slitLengthY) / 2.0;  // Центрируем по Y
-    G4VPhysicalVolume* physGlue = new G4PVPlacement(0, G4ThreeVector(0. * m, glueOffsetY, gluePosZ),
+    G4VPhysicalVolume* physGlue = new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, gluePosZ),
         logicGlue, "physGlue", logicWorld, false, 3, false);  // checkOverlaps=false
 
     // ========== КРЕМНИЕВЫЙ ДЕТЕКТОР ==========
     G4Material* siMat = nist->FindOrBuildMaterial("G4_Si");
 
+    // Оптические свойства для Si
     G4MaterialPropertiesTable* siMPT = new G4MaterialPropertiesTable();
-
     const G4int nSiEnergies = 3;
     G4double siEnergies[] = { 1.5 * eV, 2.5 * eV, 3.5 * eV };
     G4double siRindex[] = { 3.5, 4.0, 5.0 };
@@ -258,7 +217,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     siMat->SetMaterialPropertiesTable(siMPT);
 
     G4double detectorSizeX = pixelSize * gridSize;
-    G4double detectorSizeY = slitLengthY;  // Используем ту же длину по Y, что и полоски
+    G4double detectorSizeY = slitLengthY;
     G4double detectorThickness = 30 * um;
 
     G4Box* solidDetector = new G4Box("solidDetector",
@@ -267,17 +226,13 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         0.5 * detectorThickness);
     logicDetector = new G4LogicalVolume(solidDetector, siMat, "logicDetector");
 
+    // Детектор ПОСЛЕ оптического клея
     G4double detectorPosZ = gluePosZ + (glueThickness / 2.0) + (detectorThickness / 2.0);
     G4VPhysicalVolume* physDetector = new G4PVPlacement(0,
-        G4ThreeVector(0. * m, glueOffsetY, detectorPosZ),  // Центрируем по Y
-        logicDetector, "physDetector", logicWorld, false, 1, false);  // checkOverlaps=false
+        G4ThreeVector(0. * m, offsetY, detectorPosZ),
+        logicDetector, "physDetector", logicWorld, false, 1, false);
 
-    // Визуализация детектора
-    G4VisAttributes* siVisAtt = new G4VisAttributes(G4Color(0.0, 0.0, 1.0, 0.6));
-    siVisAtt->SetForceSolid(true);
-    logicDetector->SetVisAttributes(siVisAtt);
-
-    // ========== ОПТИЧЕСКИЕ ПОВЕРХНОСТИ (без изменений) ==========
+    // ========== ОПТИЧЕСКИЕ ПОВЕРХНОСТИ ==========
     G4OpticalSurface* csiGlueInterface = new G4OpticalSurface("CsI_Glue_interface");
     csiGlueInterface->SetType(dielectric_dielectric);
     csiGlueInterface->SetModel(unified);
@@ -292,17 +247,25 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     glueSiInterface->SetPolish(1.0);
     new G4LogicalBorderSurface("Glue_Si_border", physGlue, physDetector, glueSiInterface);
 
+    G4VisAttributes* siVisAtt = new G4VisAttributes(G4Color(0.0, 0.0, 1.0, 0.6));
+    siVisAtt->SetForceSolid(true);
+    logicDetector->SetVisAttributes(siVisAtt);
+
+    G4cout << "\n=== Геометрия ===" << G4endl;
+    G4cout << "Золотые полоски: Z = " << goldPosZ / um << " мкм" << G4endl;
+    G4cout << "Si-детектор: Z = " << detectorPosZ / um << " мкм (толщина " << detectorThickness / um << " мкм)" << G4endl;
+    G4cout << "==================\n" << G4endl;
+
     return physWorld;
 }
 
 void PMDetectorConstruction::ConstructSDandField()
 {
-    PMSensitiveDetector* sensDet = new PMSensitiveDetector("SensitveDetector");
-
+    PMSensitiveDetector* sensDet = new PMSensitiveDetector("SensitiveDetector");
 
     if (logicDetector) {
         logicDetector->SetSensitiveDetector(sensDet);
-        G4cout << "Main detector set as sensitive detector" << G4endl;
+        G4cout << "Si-детектор установлен как чувствительный" << G4endl;
     }
     else {
         G4cerr << "WARNING: logicDetector is null!" << G4endl;

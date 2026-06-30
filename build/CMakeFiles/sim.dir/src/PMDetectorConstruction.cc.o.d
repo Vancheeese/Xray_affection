@@ -399,10 +399,6 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VReadOutGeometry.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4SensitiveVolumeList.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSDFilter.hh \
- /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ThreeVector.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Types.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4OpticalSurface.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Physics2DVector.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Physics2DVector.icc \
@@ -411,8 +407,10 @@ CMakeFiles/sim.dir/src/PMDetectorConstruction.cc.o: \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalSurface.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalSurface.icc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalBorderSurface.icc \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalSkinSurface.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4LogicalSkinSurface.icc \
+ /home/iptch/geant4/new/include/PMSensitiveDetector.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4VSensitiveDetector.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ThreeVector.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Types.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PhysicalConstants.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Tubs.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Tubs.icc \

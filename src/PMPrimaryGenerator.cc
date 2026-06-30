@@ -11,7 +11,6 @@
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelX(0);
 std::atomic<G4int> PMPrimaryGenerator::fGlobalPixelY(0);
 std::atomic<G4int> PMPrimaryGenerator::fParticlesEmittedInCurrentPixel(0);
-const G4int PMPrimaryGenerator::fParticlesPerPixel = 1;  // N particles per pixel
 std::atomic<G4bool> PMPrimaryGenerator::fIsFinished(false);
 
 G4double energy = 0.;
@@ -25,8 +24,9 @@ PMPrimaryGenerator::PMPrimaryGenerator()
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
 
-    // ????????? ????????? (?????????)
-    G4ThreeVector pos(0., 0., 0.);
+    // Источник рентгена перед золотыми полосками (Z < 0)
+    G4double sourceZ = -10.0 * cm;  // 10 см перед объектом
+    G4ThreeVector pos(0., 0., sourceZ);
     G4ThreeVector mom(0., 0., 1.);
 
     fParticleGun->SetParticlePosition(pos);
@@ -52,7 +52,7 @@ G4int PMPrimaryGenerator::GetCurrentPixelY()
 
 void PMPrimaryGenerator::SetSourcePosition(G4double x, G4double y)
 {
-    G4ThreeVector pos(x, y, 0.);
+    G4ThreeVector pos(x, y, -10.0 * cm);  // Источник всегда перед золотом
     fParticleGun->SetParticlePosition(pos);
 }
 
@@ -86,7 +86,7 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         currentY = fGlobalPixelY.load();
         G4int particlesInPixel = fParticlesEmittedInCurrentPixel.load();
 
-        if (particlesInPixel >= fParticlesPerPixel) {
+        if (particlesInPixel >= particlesPerPixel) {
             // ????????? ? ?????????? ???????
             fParticlesEmittedInCurrentPixel = 0;
             currentX++;

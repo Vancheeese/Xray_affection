@@ -1,17 +1,14 @@
 #include "PMPhysicsList.hh"
 #include "G4EmLivermorePhysics.hh"
 #include "G4OpticalPhysics.hh"
-#include "G4Scintillation.hh"
-#include "G4ProcessManager.hh"
-#include "G4Gamma.hh"
-#include "G4Electron.hh"
-#include "G4EmStandardPhysics_option4.hh"
 
 PMPhysicsList::PMPhysicsList()
 {
-    RegisterPhysics(new G4EmStandardPhysics_option4());
+    // G4EmLivermorePhysics — точное моделирование взаимодействия рентгена с веществом
+    RegisterPhysics(new G4EmLivermorePhysics());
+    
+    // G4OpticalPhysics — для моделирования сцинтилляции и оптических фотонов
     RegisterPhysics(new G4OpticalPhysics());
-
 }
 
 PMPhysicsList::~PMPhysicsList()
