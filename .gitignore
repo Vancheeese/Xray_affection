@@ -12,4 +12,6 @@ build/*
 !build/oimg.py
 !build/run_batch_thickness.sh
 !build/snr_analysis.py
+!build/build_xray_scintillation.py
+
 .vscode

@@ -13,7 +13,7 @@ RESULTS_DIR="$PROJECT_DIR/results"
 HEADER_FILE="$SRC_DIR/PMDetectorConstruction.hh"
 
 # Список толщин для проверки (в мкм)
-THICKNESSES=(20 25 30 35 40 45 50)
+THICKNESSES=(20 100 300)
 
 # Функция для выполнения шага с повтором при ошибке
 run_step() {
@@ -92,7 +92,7 @@ for thickness in "${THICKNESSES[@]}"; do
     run_step "Запуск симуляции (thick=${thickness}um)" "cd $PROJECT_DIR && ./sim one.mac"
 
     # 5. Построение рентгеновского изображения
-    run_step "Генерация рентгеновского изображения" "cd $PROJECT_DIR && python3 build_xray_image.py"
+    run_step "Генерация рентгеновского изображения" "cd $PROJECT_DIR && python3 build_xray_scintillation.py"
 
     # 6. Анализ SNR
     run_step "Анализ SNR" "cd $PROJECT_DIR && python3 snr_analysis.py"

@@ -172,8 +172,8 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4Box* solidCsI = new G4Box("solidCsI", 0.5 * csiSizeX, 0.5 * csiSizeY, 0.5 * csiThickness);
     logicCsI = new G4LogicalVolume(solidCsI, csiMat, "logicCsI");
 
-    // Позиция CsI: ПОСЛЕ золотых полосок (золото заканчивается на Z = slitThickness)
-    G4double csiPosZ = goldPosZ + slitThickness + (csiThickness / 2.0);
+    // Позиция CsI: сразу после золотых полосок (касается задней грани)
+    G4double csiPosZ = goldPosZ + (slitThickness / 2.0) + (csiThickness / 2.0);
     G4VPhysicalVolume* physCsI = new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, csiPosZ),
         logicCsI, "physCsI", logicWorld, false, 2, checkOverlaps);
 

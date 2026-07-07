@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Оценка соотношения сигнал/шум (SNR) по фоновым пикселям (без объекта).
-Запускать из папки build: python3 snr_analysis.py
+SNR estimation based on background pixels (without object).
+Run from build folder: python3 snr_analysis.py
 """
 
 import numpy as np
@@ -17,7 +17,7 @@ def read_global_parameters():
     params = {'pixelSize': 10.0, 'gridSize': 100, 'slitWidth': 50.0, 'particlesPerPixel': 1}
     
     if not os.path.exists(cc_file):
-        print(f"⚠ Файл не найден: {cc_file}. Используются значения по умолчанию.")
+        print(f"WARNING: File not found: {cc_file}. Using defaults.")
         return params
     
     with open(cc_file, 'r', encoding='utf-8') as f:
@@ -40,7 +40,7 @@ def read_global_parameters():
 # ==================== Основная логика ====================
 def main():
     print("="*55)
-    print("АНАЛИЗ СОТНОШЕНИЯ СИГНАЛ/ШУМ (SNR)")
+    print("SNR ANALYSIS")
     print("="*55)
     
     params = read_global_parameters()
@@ -55,18 +55,18 @@ def main():
     total_width = num_slits * slit_period
     start_x = -total_width / 2.0 + slit_width / 2.0
     
-    print(f"\nПараметры геометрии:")
-    print(f"  pixelSize = {pixel_size} мкм, gridSize = {grid_size}")
-    print(f"  slitWidth = {slit_width} мкм, slitPeriod = {slit_period} мкм")
-    print(f"  Полосок: {num_slits}, Области: {lead_size} мкм")
+    print(f"\nGeometry parameters:")
+    print(f"  pixelSize = {pixel_size} um, gridSize = {grid_size}")
+    print(f"  slitWidth = {slit_width} um, slitPeriod = {slit_period} um")
+    print(f"  Slits: {num_slits}, Area: {lead_size} um")
     print(f"  particlesPerPixel = {particles_per_pixel}")
     
     # Загрузка данных
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    data_file = os.path.join(script_dir, 'xray_counts_data.npz')
+    data_file = os.path.join(script_dir, 'xray_scint_data.npz')
     
     if not os.path.exists(data_file):
-        print(f"\n❌ Файл {data_file} не найден. Сначала запустите build_xray_image.py")
+        print(f"\n❌ Файл {data_file} не найден. Сначала запустите build_xray_scintillation.py")
         return
     
     data = np.load(data_file)
@@ -74,7 +74,7 @@ def main():
     x_edges = data['x_edges']
     y_edges = data['y_edges']
     
-    print(f"\nЗагружено данных: {counts.shape[0]}x{counts.shape[1]} пикселей")
+    print(f"\nLoaded data: {counts.shape[0]}x{counts.shape[1]} pixels")
     
     # Вычисление центров пикселей
     x_centers = (x_edges[:-1] + x_edges[1:]) / 2
@@ -89,9 +89,9 @@ def main():
     n_bg_pixels = len(bg_counts)
     n_strip_pixels = np.sum(mask_2d)
     
-    print(f"\nСтатистика пикселей:")
-    print(f"  Фоновые (без полосок): {n_bg_pixels}")
-    print(f"  С объектом (под полосками): {n_strip_pixels}")
+    print(f"\nPixel statistics:")
+    print(f"  Background (without strips): {n_bg_pixels}")
+    print(f"  With object (under strips):  {n_strip_pixels}")
     
     # Расчет SNR
     mean_bg = np.mean(bg_counts)
@@ -99,65 +99,65 @@ def main():
     snr = mean_bg / std_bg if std_bg > 0 else float('inf')
     
     print(f"\n{'='*55}")
-    print("РЕЗУЛЬТАТЫ SNR (ФОНОВЫЕ ПИКСЕЛИ):")
-    print(f"  Среднее количество фотонов/пиксель: {mean_bg:.2f}")
-    print(f"  Стандартное отклонение (шум):      {std_bg:.2f}")
-    print(f"  SNR (μ/σ):                          {snr:.2f}")
-    print(f"  Фотонов на 1 первичную частицу:     {mean_bg/particles_per_pixel:.2f}")
+    print("SNR RESULTS (BACKGROUND PIXELS):")
+    print(f"  Mean photons/pixel:                {mean_bg:.2f}")
+    print(f"  Std dev (noise):                   {std_bg:.2f}")
+    print(f"  SNR (mean/std):                    {snr:.2f}")
+    print(f"  Photons per 1 primary particle:    {mean_bg/particles_per_pixel:.2f}")
     print(f"{'='*55}")
     
     # Теоретическая оценка
     poisson_snr = np.sqrt(mean_bg) if mean_bg > 0 else 0
-    print(f"\nТеоретический SNR (Пуассон, √N): {poisson_snr:.2f}")
+    print(f"\nTheoretical SNR (Poisson, sqrt(N)): {poisson_snr:.2f}")
     if snr > 0 and poisson_snr > 0:
         ratio = snr / poisson_snr
         if ratio < 0.9:
-            print("⚠️  SNR ниже пуассоновского предела → добавлены шумы (оптическое растекание, неидеальность поверхности)")
+            print("WARNING: SNR below Poisson limit -> extra noise added")
         elif ratio > 1.1:
-            print("✅ SNR близок или выше пуассоновского → хорошее качество детектирования")
+            print("OK: SNR close to or above Poisson -> good detection quality")
     
-    print(f"\n📈 Зависимость SNR от particlesPerPixel:")
-    print(f"   Теоретически SNR ~ √(particlesPerPixel)")
-    print(f"   При {particles_per_pixel} частицах/пиксель: ожидаемый рост SNR в √{particles_per_pixel} ≈ {np.sqrt(particles_per_pixel):.2f} раза")
+    print(f"\nSNR dependence on particlesPerPixel:")
+    print(f"   Theoretically SNR ~ sqrt(particlesPerPixel)")
+    print(f"   At {particles_per_pixel} particles/pixel: expected SNR growth in sqrt({particles_per_pixel}) = {np.sqrt(particles_per_pixel):.2f}x")
     
     # Визуализация распределения (сохраняем, не показываем)
     plt.figure(figsize=(8, 5))
     plt.hist(bg_counts, bins=50, color='steelblue', edgecolor='black', alpha=0.7)
-    plt.axvline(mean_bg, color='red', linestyle='--', label=f'Среднее: {mean_bg:.1f}')
-    plt.axvline(mean_bg - std_bg, color='orange', linestyle=':', label=f'μ-σ: {mean_bg-std_bg:.1f}')
-    plt.axvline(mean_bg + std_bg, color='orange', linestyle=':', label=f'μ+σ: {mean_bg+std_bg:.1f}')
-    plt.xlabel('Количество оптических фотонов в пикселе', fontsize=12)
-    plt.ylabel('Частота', fontsize=12)
-    plt.title(f'Распределение фотонов в фоновых пикселях\nSNR = {snr:.2f}, N_пикселей = {n_bg_pixels}', fontsize=14)
+    plt.axvline(mean_bg, color='red', linestyle='--', label=f'Mean: {mean_bg:.1f}')
+    plt.axvline(mean_bg - std_bg, color='orange', linestyle=':', label=f'mu-sigma: {mean_bg-std_bg:.1f}')
+    plt.axvline(mean_bg + std_bg, color='orange', linestyle=':', label=f'mu+sigma: {mean_bg+std_bg:.1f}')
+    plt.xlabel('Number of optical photons per pixel', fontsize=12)
+    plt.ylabel('Frequency', fontsize=12)
+    plt.title(f'Photon distribution in background pixels\nSNR = {snr:.2f}, N_pixels = {n_bg_pixels}', fontsize=14)
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(script_dir, 'snr_histogram.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"\n✅ Гистограмма сохранена: snr_histogram.png")
+    print(f"\n[OK] Histogram saved: snr_histogram.png")
 
     # Сохранение текстовых результатов в файл
     results_file = os.path.join(script_dir, 'snr_results.txt')
     with open(results_file, 'w', encoding='utf-8') as f:
         f.write("="*55 + "\n")
-        f.write("РЕЗУЛЬТАТЫ SNR (ФОНОВЫЕ ПИКСЕЛИ):\n")
+        f.write("SNR RESULTS (BACKGROUND PIXELS):\n")
         f.write("="*55 + "\n")
-        f.write(f"Среднее количество фотонов/пиксель: {mean_bg:.2f}\n")
-        f.write(f"Стандартное отклонение (шум):      {std_bg:.2f}\n")
-        f.write(f"SNR (μ/σ):                          {snr:.2f}\n")
-        f.write(f"Фотонов на 1 первичную частицу:     {mean_bg/particles_per_pixel:.2f}\n")
+        f.write(f"Mean photons/pixel: {mean_bg:.2f}\n")
+        f.write(f"Std dev (noise):    {std_bg:.2f}\n")
+        f.write(f"SNR (mean/std):     {snr:.2f}\n")
+        f.write(f"Photons/primary:    {mean_bg/particles_per_pixel:.2f}\n")
         f.write("="*55 + "\n")
-        f.write(f"Теоретический SNR (Пуассон, √N): {poisson_snr:.2f}\n")
+        f.write(f"Theoretical SNR (Poisson, sqrt(N)): {poisson_snr:.2f}\n")
         if snr > 0 and poisson_snr > 0:
             ratio = snr / poisson_snr
             if ratio < 0.9:
-                f.write("⚠️  SNR ниже пуассоновского предела → добавлены шумы (оптическое растекание, неидеальность поверхности)\n")
+                f.write("WARNING: SNR below Poisson limit -> extra noise\n")
             elif ratio > 1.1:
-                f.write("✅ SNR близок или выше пуассоновского → хорошее качество детектирования\n")
-        f.write(f"\n📈 Зависимость SNR от particlesPerPixel:\n")
-        f.write(f"   Теоретически SNR ~ √(particlesPerPixel)\n")
-        f.write(f"   При {particles_per_pixel} частицах/пиксель: ожидаемый рост SNR в √{particles_per_pixel} ≈ {np.sqrt(particles_per_pixel):.2f} раза\n")
+                f.write("OK: SNR close to or above Poisson -> good quality\n")
+        f.write(f"\nSNR vs particlesPerPixel:\n")
+        f.write(f"   Theoretically SNR ~ sqrt(particlesPerPixel)\n")
+        f.write(f"   At {particles_per_pixel}: growth in sqrt({particles_per_pixel}) = {np.sqrt(particles_per_pixel):.2f}x\n")
     
-    print(f"✅ Текстовые результаты сохранены: snr_results.txt")
+    print(f"[OK] Results saved: snr_results.txt")
 
 if __name__ == '__main__':
     main()
