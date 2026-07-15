@@ -65,7 +65,12 @@ def read_hits_data(filename='hits_data.csv'):
 
 # ==================== Построение геометрии ====================
 def build_geometry_mask(params, grid_size, x_edges, y_edges):
-    """Создаёт бинарную маску золотых полосок"""
+    """Создаёт бинарную маску золотых полосок.
+    
+    Полоски в C++ идут ВДОЛЬ оси Y (длина по Y = leadSize, ширина по X = slitWidth).
+    counts[i, j] соответствует y_edges[i] и x_edges[j].
+    geometry[i, j] = 1.0 если пиксель попадает под полоску.
+    """
     pixel_size = params['pixelSize']
     slit_width = params['slitWidth']
     lead_size = pixel_size * grid_size
@@ -75,14 +80,21 @@ def build_geometry_mask(params, grid_size, x_edges, y_edges):
     start_x = -total_width / 2.0 + slit_width / 2.0
     
     x_centers = (x_edges[:-1] + x_edges[1:]) / 2.0
+    y_centers = (y_edges[:-1] + y_edges[1:]) / 2.0
     
     geometry = np.zeros((grid_size, grid_size), dtype=float)
-    is_strip = ((x_centers - start_x) % slit_period) < slit_width
     
-    for j in range(grid_size):
-        for i in range(grid_size):
-            if is_strip[i]:
-                geometry[j, i] = 1.0  # золото
+    # Полоски идут ВДОЛЬ Y, поэтому проверяем только X
+    for i in range(num_slits):
+        strip_center = start_x + i * slit_period
+        x_min = strip_center - slit_width / 2.0
+        x_max = strip_center + slit_width / 2.0
+        is_in_strip = (x_centers >= x_min) & (x_centers < x_max)
+        
+        # Помечаем весь столбец (все Y) для этого X
+        for j, in_strip in enumerate(is_in_strip):
+            if in_strip:
+                geometry[:, j] = 1.0  # золото
     
     return geometry, num_slits, slit_width, slit_period, start_x
 
@@ -159,7 +171,7 @@ def build_images(df, params):
     
     # 1) Карта количества оптических фотонов
     im1 = axes[0].imshow(
-        counts_smooth.T, origin='lower', extent=extent,
+        counts_smooth, origin='lower', extent=extent,
         cmap='hot', interpolation='bilinear'
     )
     axes[0].set_xlabel('X, мкм', fontsize=12)
@@ -176,7 +188,7 @@ def build_images(df, params):
         att_vmin, att_vmax = 0, 1
     
     im2 = axes[1].imshow(
-        attenuation_smooth.T, origin='lower', extent=extent,
+        attenuation_smooth, origin='lower', extent=extent,
         cmap='gray_r', interpolation='bilinear',
         vmin=att_vmin, vmax=att_vmax
     )
@@ -188,7 +200,7 @@ def build_images(df, params):
     # 3) Отношение сигнал/фон
     ratio = np.where(bg_mask, counts_smooth / mean_bg_counts, np.nan)
     im3 = axes[2].imshow(
-        ratio.T, origin='lower', extent=extent,
+        ratio, origin='lower', extent=extent,
         cmap='viridis', interpolation='bilinear',
         vmin=0, vmax=1.2
     )

@@ -1,0 +1,6 @@
+/vis/open OGL
+/vis/drawVolume
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate
+/run/initialize
+/run/beamOn 10

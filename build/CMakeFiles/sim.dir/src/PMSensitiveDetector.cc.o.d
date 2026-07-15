@@ -500,4 +500,6 @@ CMakeFiles/sim.dir/src/PMSensitiveDetector.cc.o: \
  /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
  /usr/include/c++/13/bits/list.tcc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Event.hh \
- /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Threading.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleDefinition.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ParticleTable.hh

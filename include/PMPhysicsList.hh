@@ -8,6 +8,8 @@ class PMPhysicsList : public G4VModularPhysicsList
 public:
     PMPhysicsList();
     virtual ~PMPhysicsList();
+
+    virtual void ConstructProcess() override;
 };
 
 #endif

@@ -80,9 +80,22 @@ def main():
     x_centers = (x_edges[:-1] + x_edges[1:]) / 2
     y_centers = (y_edges[:-1] + y_edges[1:]) / 2
     
-    # Определение маски: True = полоска, False = зазор (фон)
-    is_strip = ((x_centers - start_x) % slit_period) < slit_width
-    mask_2d = np.tile(is_strip[np.newaxis, :], (grid_size, 1))
+    # Определение маски: True = полоска, False = зазор (фон).
+    # Полоски идут ВДОЛЬ Y, поэтому проверяем только X.
+    mask_2d = np.zeros((grid_size, grid_size), dtype=bool)
+    
+    for i in range(num_slits):
+        # Центр полоски (как в C++: x = startX + i * slitPeriod)
+        strip_center = start_x + i * slit_period
+        # Полоска занимает [center - slitWidth/2, center + slitWidth/2]
+        x_min = strip_center - slit_width / 2.0
+        x_max = strip_center + slit_width / 2.0
+        is_in_strip = (x_centers >= x_min) & (x_centers < x_max)
+        
+        # Помечаем весь столбец (все Y) для этого X
+        for j, in_strip in enumerate(is_in_strip):
+            if in_strip:
+                mask_2d[:, j] = True
     
     # Извлечение фоновых пикселей (без объекта)
     bg_counts = counts[~mask_2d].flatten()

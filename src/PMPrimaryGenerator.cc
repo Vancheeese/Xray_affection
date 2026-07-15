@@ -119,7 +119,7 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     // ?????????? ??????? ?????? ???? ?? ?????????
     if (shouldGenerate && !fIsFinished.load()) {
         // Рассчитываем координаты частиц по размеру области, как и в SensitiveDetector
-        const G4double range = pixelSize * gridSize;   
+        const G4double range = pixelSize * gridSize / 2;   
         const G4int numBins = gridSize;
 
         // Генерируем частицы по размеру области
@@ -129,7 +129,36 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         SetSourcePosition(x, y);
         energy = fParticleGun->GetParticleEnergy();
 
-        // ?????????? ???????
+        // ====== ОТЛАДКА: проверка попадания в золото ======
+        static G4int totalEvents = 0;
+        static G4int goldHits = 0;
+        totalEvents++;
+
+        G4double leadSize = pixelSize * gridSize;
+        G4double slitPeriod = slitWidth + slitWidth;
+        G4int numSlits = (G4int)(leadSize / slitPeriod);
+        G4double totalWidth = numSlits * slitPeriod;
+        G4double startX = -totalWidth / 2.0 + slitWidth / 2.0;
+        bool onGold = false;
+        for (G4int i = 0; i < numSlits; ++i) {
+            G4double xMin = startX + i * slitPeriod - slitWidth / 2.0;
+            G4double xMax = startX + i * slitPeriod + slitWidth / 2.0;
+            if (x >= xMin && x <= xMax) {
+                onGold = true;
+                break;
+            }
+        }
+        if (onGold) goldHits++;
+
+        if (totalEvents % 1000 == 0) {
+            G4cout << "[DEBUG] Events: " << totalEvents
+                << ", Gold hits: " << goldHits
+                << ", Fraction: " << (G4double)goldHits / totalEvents
+                << G4endl;
+        }
+        // ====== КОНЕЦ ОТЛАДКИ ======
+
+        // Генерируем первичную вершину
         fParticleGun->GeneratePrimaryVertex(anEvent);
 
         // ???????????

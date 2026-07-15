@@ -7,10 +7,10 @@ G4double pixelSize = 3.5 * um;
 G4int gridSize = 100;
 
 // Ширина и толщина золотых полосок (50 мкм)
-G4double slitWidth = 25. * um;
+G4double slitWidth = 50. * um;
 
 // Количество частиц на пиксель
-G4int particlesPerPixel = 10;
+G4int particlesPerPixel = 100;
 
 // Тип сцинтиллятора: 0 = CsI(Tl), 1 = YAG(Tb)
-G4int scintillatorType = 0;
+G4int scintillatorType = 1;

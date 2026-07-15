@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib> // ��� std::atof
+#include <cstdlib> // for std::atof
 
 #include "G4RunManager.hh"
 #include "G4MTRunManager.hh"
@@ -16,25 +16,33 @@ int main(int argc, char** argv)
 {
     G4UIExecutive* ui = nullptr;
 
+    // --- Проверка: однопоточный или многопоточный ---
 #ifdef G4MULTITHREADED
+    G4cout << "=== MULTI-THREADED MODE ===" << G4endl;
     G4MTRunManager* runManager = new G4MTRunManager;
     runManager->SetNumberOfThreads(12);
 #else
+    G4cout << "=== SINGLE-THREADED MODE ===" << G4endl;
     G4RunManager* runManager = new G4RunManager;
 #endif
 
-    // Physics list
+    // 1. Physics list (первым, для правильной инициализации)
+    G4cout << "Setting physics list..." << G4endl;
     runManager->SetUserInitialization(new PMPhysicsList());
 
-    // --- �������� � ������������ ������� ������� ---
+    // 2. Detector construction
+    G4cout << "Setting detector construction..." << G4endl;
     PMDetectorConstruction* detector = new PMDetectorConstruction();
     runManager->SetUserInitialization(detector);
 
-    // Action initialization
+    // 3. Action initialization
+    G4cout << "Setting action initialization..." << G4endl;
     runManager->SetUserInitialization(new PMActionInitialization());
 
-    // �������������� runManager (�����: ����� ������� �������)
+    // Initialize run manager (должен быть после всех SetUserInitialization)
+    G4cout << "Initializing run manager..." << G4endl;
     runManager->Initialize();
+    G4cout << "Run manager initialized." << G4endl;
 
     if (argc == 1) {
         ui = new G4UIExecutive(argc, argv);
@@ -52,6 +60,7 @@ int main(int argc, char** argv)
     else {
         G4String command = "/control/execute ";
         G4String fileName = argv[1];
+        G4cout << "Executing macro: " << fileName << G4endl;
         UImanager->ApplyCommand(command + fileName);
     }
 
