@@ -13,5 +13,7 @@ build/*
 !build/run_batch_thickness.sh
 !build/snr_analysis.py
 !build/build_xray_scintillation.py
+!build/build_xray_direct.py
+!build/snr_direct.py
 
 .vscode
