@@ -91,10 +91,10 @@ def build_geometry_mask(params, grid_size, x_edges, y_edges):
         x_max = strip_center + slit_width / 2.0
         is_in_strip = (x_centers >= x_min) & (x_centers < x_max)
         
-        # Помечаем весь столбец (все Y) для этого X
+        # Помечаем строку (все Y) для этого X (полоски вдоль Y)
         for j, in_strip in enumerate(is_in_strip):
             if in_strip:
-                geometry[:, j] = 1.0  # золото
+                geometry[j, :] = 1.0  # золото
     
     return geometry, num_slits, slit_width, slit_period, start_x
 
@@ -136,30 +136,36 @@ def build_images(df, params):
         range=[x_range, y_range]
     )
     
-    print(f"  Ненулевых пикселей: {np.sum(counts > 0):,} / {grid_size*grid_size:,}")
-    print(f"  Максимум фотонов/пиксель: {int(np.max(counts))}")
+    # counts[i, j] соответствует x_centers[i] и y_centers[j]
+    # imshow отображает первую ось по вертикали, вторую по горизонтали
+    # Чтобы X был горизонтален, а Y вертикален — транспонируем
+    counts_T = counts.T
+    
+    print(f"  Ненулевых пикселей: {np.sum(counts_T > 0):,} / {grid_size*grid_size:,}")
+    print(f"  Максимум фотонов/пиксель: {int(np.max(counts_T))}")
     print(f"  Средняя энергия оптических фотонов: {np.mean(df_optical['Energy_eV']):.2f} эВ")
     
     # --- Маска геометрии ---
     geometry, num_slits, slit_width, slit_period, start_x = build_geometry_mask(
         params, grid_size, x_edges, y_edges
     )
+    geometry_T = geometry.T
     
     # --- Вычисление ослабления ---
     # Находим фоновые пиксели (без золота) для референса
-    bg_mask = geometry == 0
+    bg_mask = geometry_T == 0
     if np.sum(bg_mask) > 0:
-        mean_bg_counts = np.mean(counts[bg_mask])
+        mean_bg_counts = np.mean(counts_T[bg_mask])
     else:
-        mean_bg_counts = np.max(counts)
+        mean_bg_counts = np.max(counts_T)
     
     # Аттенюация: I/I0 = counts / mean_bg_counts
     # A = -ln(I/I0)
-    signal = np.where(counts > 0, counts / mean_bg_counts, 0)
+    signal = np.where(counts_T > 0, counts_T / mean_bg_counts, 0)
     attenuation = -np.log(np.clip(signal, 1e-10, None))
     
     # --- Сглаживание ---
-    counts_smooth = gaussian_filter(counts.astype(float), sigma=0.8)
+    counts_T_smooth = gaussian_filter(counts_T.astype(float), sigma=0.8)
     attenuation_smooth = gaussian_filter(attenuation, sigma=0.8)
     
     # ==================== Визуализация ====================
@@ -171,7 +177,7 @@ def build_images(df, params):
     
     # 1) Карта количества оптических фотонов
     im1 = axes[0].imshow(
-        counts_smooth, origin='lower', extent=extent,
+        counts_T_smooth, origin='lower', extent=extent,
         cmap='hot', interpolation='bilinear'
     )
     axes[0].set_xlabel('X, мкм', fontsize=12)
@@ -198,7 +204,7 @@ def build_images(df, params):
     plt.colorbar(im2, ax=axes[1], label='A = -ln(I/I₀)')
     
     # 3) Отношение сигнал/фон
-    ratio = np.where(bg_mask, counts_smooth / mean_bg_counts, np.nan)
+    ratio = np.where(bg_mask, counts_T_smooth / mean_bg_counts, np.nan)
     im3 = axes[2].imshow(
         ratio, origin='lower', extent=extent,
         cmap='viridis', interpolation='bilinear',
@@ -211,7 +217,7 @@ def build_images(df, params):
     
     # 4) Геометрия (золотые полоски)
     im4 = axes[3].imshow(
-        geometry, origin='lower', extent=extent,
+        geometry_T, origin='lower', extent=extent,
         cmap='Greys', interpolation='nearest',
         vmin=0, vmax=1
     )
@@ -230,7 +236,7 @@ def build_images(df, params):
     # Аттенюация (крупно)
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     im = ax.imshow(
-        attenuation_smooth.T, origin='lower', extent=extent,
+        attenuation_smooth, origin='lower', extent=extent,
         cmap='gray_r', interpolation='bilinear',
         vmin=att_vmin, vmax=att_vmax
     )
@@ -246,7 +252,7 @@ def build_images(df, params):
     # Карта количества (крупно)
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     im = ax.imshow(
-        counts_smooth.T, origin='lower', extent=extent,
+        counts_T_smooth, origin='lower', extent=extent,
         cmap='hot', interpolation='bilinear'
     )
     ax.set_xlabel('X, мкм', fontsize=14)
@@ -258,22 +264,54 @@ def build_images(df, params):
     plt.close()
     print("✅ Сохранено: xray_scint_counts.png")
     
+    # ==================== Геометрия золотых полосок ====================
+    fig_geo, ax_geo = plt.subplots(1, 1, figsize=(10, 10))
+    
+    # Создаём изображение геометрии
+    ax_geo.imshow(
+        geometry_T, origin='lower', extent=extent,
+        cmap='Greys', interpolation='nearest',
+        vmin=0, vmax=1
+    )
+    
+    ax_geo.set_xlabel('X, мкм', fontsize=14)
+    ax_geo.set_ylabel('Y, мкм', fontsize=14)
+    ax_geo.set_title(
+        f'Геометрия золотой маски\n'
+        f'{num_slits} полосок | ширина={slit_width} мкм | шаг={slit_period} мкм | '
+        f'общая ширина={num_slits*slit_period:.0f} мкм',
+        fontsize=16
+    )
+    
+    # Легенда вместо цветовой шкалы
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='black', edgecolor='black', label='Золото (1.0)'),
+        Patch(facecolor='white', edgecolor='black', label='Пустота (0.0)')
+    ]
+    ax_geo.legend(handles=legend_elements, loc='best', framealpha=0.9, fontsize=12)
+    
+    plt.tight_layout()
+    plt.savefig('xray_scint_geometry.png', dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
+    print("✅ Сохранено: xray_scint_geometry.png")
+    
     # ==================== Статистика ====================
     print(f"\n{'='*55}")
     print("СТАТИСТИКА:")
     print(f"  Пикселей: {grid_size}x{grid_size} = {grid_size*grid_size:,}")
-    print(f"  Ненулевых: {np.sum(counts > 0):,} ({100*np.sum(counts>0)/(grid_size*grid_size):.1f}%)")
+    print(f"  Ненулевых: {np.sum(counts_T > 0):,} ({100*np.sum(counts_T>0)/(grid_size*grid_size):.1f}%)")
     print(f"  Всего оптических фотонов: {len(df_optical):,}")
-    print(f"  Максимум/пиксель: {int(np.max(counts))}")
-    print(f"  Среднее/пиксель (ненулевые): {np.mean(counts[counts>0]):.1f}")
+    print(f"  Максимум/пиксель: {int(np.max(counts_T))}")
+    print(f"  Среднее/пиксель (ненулевые): {np.mean(counts_T[counts_T>0]):.1f}")
     print(f"  Среднее (фон, без золота): {mean_bg_counts:.1f}")
     print(f"  Аттенюация макс: {np.max(attenuation_smooth):.3f}")
     
     # Статистика по золоту и фону
-    gold_mask = geometry == 1
+    gold_mask = geometry_T == 1
     if np.sum(gold_mask) > 0 and np.sum(bg_mask) > 0:
-        mean_gold_counts = np.mean(counts[gold_mask])
-        mean_bg_counts_val = np.mean(counts[bg_mask])
+        mean_gold_counts = np.mean(counts_T[gold_mask])
+        mean_bg_counts_val = np.mean(counts_T[bg_mask])
         contrast = 1 - mean_gold_counts / mean_bg_counts_val
         print(f"\n  Среднее (золото): {mean_gold_counts:.1f}")
         print(f"  Среднее (фон): {mean_bg_counts_val:.1f}")
@@ -283,11 +321,11 @@ def build_images(df, params):
     
     # ==================== Сохранение данных ====================
     np.savez('xray_scint_data.npz',
-             counts=counts,
-             counts_smooth=counts_smooth,
+             counts=counts_T,
+             counts_smooth=counts_T_smooth,
              attenuation=attenuation,
              attenuation_smooth=attenuation_smooth,
-             geometry=geometry,
+             geometry=geometry_T,
              x_edges=x_edges,
              y_edges=y_edges,
              mean_bg_counts=mean_bg_counts,
