@@ -84,9 +84,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
             logicLead, "physSlit" + std::to_string(i), logicWorld, false, i, false);
     }
 
-    // ========== СЦИНТИЛЛЯТОР (ЗАКОММЕНТИРОВАН) ==========
-    // Прямая регистрация рентгеновских частиц на кремниевом детекторе
-    /*
+    // ========== СЦИНТИЛЛЯТОР (CsI/Tl или YAG/Tb) ==========
     G4double csiThickness = fCsIThickness;
     G4double csiSizeX = pixelSize * gridSize;
     G4double csiSizeY = pixelSize * gridSize;
@@ -207,10 +205,24 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4double gluePosZ = csiPosZ + (csiThickness / 2.0) + (glueThickness / 2.0);
     G4VPhysicalVolume* physGlue = new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, gluePosZ),
         logicGlue, "physGlue", logicWorld, false, 3, false);  // checkOverlaps=false
-    */
 
-    // ========== КРЕМНИЕВЫЙ ДЕТЕКТОР (ПРЯМАЯ РЕГИСТРАЦИЯ РЕНТГЕНА) ==========
+    // Визуализация оптического клея
+    G4VisAttributes* glueVisAtt = new G4VisAttributes(G4Color(0.5, 0.5, 0.5, 0.5));
+    glueVisAtt->SetForceSolid(true);
+    logicGlue->SetVisAttributes(glueVisAtt);
+
+    // ========== КРЕМНИЕВЫЙ ДЕТЕКТОР ==========
     G4Material* siMat = nist->FindOrBuildMaterial("G4_Si");
+
+    // Оптические свойства для Si (для оптических фотонов)
+    G4MaterialPropertiesTable* siMPT = new G4MaterialPropertiesTable();
+    const G4int nSiEnergies = 3;
+    G4double siEnergies[] = { 1.5 * eV, 2.5 * eV, 3.5 * eV };
+    G4double siRindex[] = { 3.5, 4.0, 5.0 };
+    G4double siAbsLength[] = { 15 * um, 10 * um, 5 * um };
+    siMPT->AddProperty("RINDEX", siEnergies, siRindex, nSiEnergies);
+    siMPT->AddProperty("ABSLENGTH", siEnergies, siAbsLength, nSiEnergies);
+    siMat->SetMaterialPropertiesTable(siMPT);
 
     G4double detectorSizeX = pixelSize * gridSize;
     G4double detectorSizeY = slitLengthY;
@@ -222,8 +234,8 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         0.5 * detectorThickness);
     logicDetector = new G4LogicalVolume(solidDetector, siMat, "logicDetector");
 
-    // Детектор вплотную к золотым полоскам (задняя грань золота = slitThickness/2)
-    G4double detectorPosZ = goldPosZ + (slitThickness / 2.0) + (detectorThickness / 2.0);
+    // Детектор ПОСЛЕ оптического клея
+    G4double detectorPosZ = gluePosZ + (glueThickness / 2.0) + (detectorThickness / 2.0);
     G4VPhysicalVolume* physDetector = new G4PVPlacement(0,
         G4ThreeVector(0. * m, offsetY, detectorPosZ),
         logicDetector, "physDetector", logicWorld, false, 1, false);
@@ -232,8 +244,25 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     siVisAtt->SetForceSolid(true);
     logicDetector->SetVisAttributes(siVisAtt);
 
+    // ========== ОПТИЧЕСКИЕ ПОВЕРХНОСТИ ==========
+    G4OpticalSurface* csiGlueInterface = new G4OpticalSurface("CsI_Glue_interface");
+    csiGlueInterface->SetType(dielectric_dielectric);
+    csiGlueInterface->SetModel(unified);
+    csiGlueInterface->SetFinish(polished);
+    csiGlueInterface->SetPolish(1.0);
+    new G4LogicalBorderSurface("CsI_Glue_border", physCsI, physGlue, csiGlueInterface);
+
+    G4OpticalSurface* glueSiInterface = new G4OpticalSurface("Glue_Si_interface");
+    glueSiInterface->SetType(dielectric_dielectric);
+    glueSiInterface->SetModel(unified);
+    glueSiInterface->SetFinish(polished);
+    glueSiInterface->SetPolish(1.0);
+    new G4LogicalBorderSurface("Glue_Si_border", physGlue, physDetector, glueSiInterface);
+
     G4cout << "\n=== Геометрия ===" << G4endl;
     G4cout << "Золотые полоски: Z = " << goldPosZ / um << " мкм" << G4endl;
+    G4cout << "CsI-сцинтиллятор: Z = " << csiPosZ / um << " мкм (толщина " << csiThickness / um << " мкм)" << G4endl;
+    G4cout << "Оптический клей: Z = " << gluePosZ / um << " мкм (толщина " << glueThickness / um << " мкм)" << G4endl;
     G4cout << "Si-детектор: Z = " << detectorPosZ / um << " мкм (толщина " << detectorThickness / um << " мкм)" << G4endl;
     G4cout << "==================\n" << G4endl;
 

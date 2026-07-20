@@ -45,7 +45,6 @@ PMSensitiveDetector::~PMSensitiveDetector()
 
 void PMSensitiveDetector::Initialize(G4HCofThisEvent*)
 {
-    eventPhotonCount = 0;
 }
 
 G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)

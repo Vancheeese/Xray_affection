@@ -7,7 +7,7 @@ G4double pixelSize = 3.5 * um;
 G4int gridSize = 100;
 
 // Ширина и толщина золотых полосок (50 мкм)
-G4double slitWidth = 50. * um;
+G4double slitWidth = 25 * um;
 
 // Количество частиц на пиксель
 G4int particlesPerPixel = 100;

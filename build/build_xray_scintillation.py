@@ -44,23 +44,44 @@ def read_global_parameters():
 
 
 # ==================== Чтение данных ====================
-def read_hits_data(filename='hits_data.csv'):
-    """Читает hits_data.csv, возвращает DataFrame"""
+def read_hits_data(filename='hits_data.csv', E_MIN=1.5, E_MAX=3.5):
+    """Читает hits_data.csv, возвращает DataFrame с оптическими фотонами.
+    Обрабатывает файл по частям (chunked), чтобы не забивать память."""
+    required_cols = ['Energy_eV', 'PosX_um', 'PosY_um']
+    chunks = []
+    
     for encoding in ['utf-8', 'utf-8-sig', 'latin1', 'cp1251']:
         try:
-            df = pd.read_csv(filename, sep='\t', comment='#', encoding=encoding, low_memory=False)
-            required_cols = ['Energy_eV', 'PosX_um', 'PosY_um']
-            if all(col in df.columns for col in required_cols):
-                df['Energy_eV'] = pd.to_numeric(df['Energy_eV'], errors='coerce')
-                df['PosX_um'] = pd.to_numeric(df['PosX_um'], errors='coerce')
-                df['PosY_um'] = pd.to_numeric(df['PosY_um'], errors='coerce')
-                df.dropna(subset=required_cols, inplace=True)
-                return df[required_cols]
+            print(f"  Пробуем кодировку: {encoding}...")
+            total_rows = 0
+            loaded_rows = 0
+            for chunk in pd.read_csv(filename, sep='	', comment='#', encoding=encoding, 
+                                     usecols=required_cols, chunksize=500000, low_memory=False):
+                total_rows += len(chunk)
+                chunk['Energy_eV'] = pd.to_numeric(chunk['Energy_eV'], errors='coerce')
+                chunk['PosX_um'] = pd.to_numeric(chunk['PosX_um'], errors='coerce')
+                chunk['PosY_um'] = pd.to_numeric(chunk['PosY_um'], errors='coerce')
+                chunk.dropna(subset=required_cols, inplace=True)
+                # Фильтруем по энергии оптических фотонов (1.5 - 3.5 эВ)
+                mask = (chunk['Energy_eV'] >= E_MIN) & (chunk['Energy_eV'] <= E_MAX)
+                filtered = chunk[mask]
+                chunks.append(filtered)
+                loaded_rows += len(filtered)
+                del chunk, filtered, mask
+                
+            print(f"  ✅ Прочитано {total_rows:,} строк. Отфильтровано {loaded_rows:,} оптических фотонов.")
+            break 
         except Exception as e:
             print(f"  Кодировка {encoding}: {e}")
             continue
-    
-    return pd.DataFrame()
+            
+    if not chunks:
+        print("  ❌ Не удалось прочитать данные!")
+        return pd.DataFrame()
+        
+    df = pd.concat(chunks, ignore_index=True)
+    del chunks
+    return df
 
 
 # ==================== Построение геометрии ====================
@@ -166,7 +187,7 @@ def build_images(df, params):
     
     # --- Сглаживание ---
     counts_T_smooth = gaussian_filter(counts_T.astype(float), sigma=0.8)
-    attenuation_smooth = gaussian_filter(attenuation, sigma=0.8)
+    # Аттенюация не требует сглаживания — она уже показывает чёткие границы золота
     
     # ==================== Визуализация ====================
     x_centers = (x_edges[:-1] + x_edges[1:]) / 2.0
@@ -186,7 +207,7 @@ def build_images(df, params):
     plt.colorbar(im1, ax=axes[0], label='Фотонов/пиксель')
     
     # 2) Аттенюация (рентгеновское изображение)
-    att_finite = attenuation_smooth[~np.isinf(attenuation_smooth)]
+    att_finite = attenuation[~np.isinf(attenuation)]
     if len(att_finite) > 0:
         att_vmin = np.percentile(att_finite, 2)
         att_vmax = np.percentile(att_finite, 98)
@@ -194,8 +215,8 @@ def build_images(df, params):
         att_vmin, att_vmax = 0, 1
     
     im2 = axes[1].imshow(
-        attenuation_smooth, origin='lower', extent=extent,
-        cmap='gray_r', interpolation='bilinear',
+        attenuation, origin='lower', extent=extent,
+        cmap='gray_r', interpolation='nearest',
         vmin=att_vmin, vmax=att_vmax
     )
     axes[1].set_xlabel('X, мкм', fontsize=12)
@@ -236,13 +257,13 @@ def build_images(df, params):
     # Аттенюация (крупно)
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     im = ax.imshow(
-        attenuation_smooth, origin='lower', extent=extent,
-        cmap='gray_r', interpolation='bilinear',
+        attenuation, origin='lower', extent=extent,
+        cmap='gray_r', interpolation='nearest',
         vmin=att_vmin, vmax=att_vmax
     )
     ax.set_xlabel('X, мкм', fontsize=14)
     ax.set_ylabel('Y, мкм', fontsize=14)
-    ax.set_title(f'Рентгеновское изображение (сцинтилляция)\nE={E_OPTICAL_MIN}-{E_OPTICAL_MAX} эВ, σ=0.8', fontsize=16)
+    ax.set_title(f'Рентгеновское изображение (сцинтилляция)\nE={E_OPTICAL_MIN}-{E_OPTICAL_MAX} эВ', fontsize=16)
     cbar = plt.colorbar(im, ax=ax, label='A = -ln(I/I₀)')
     plt.tight_layout()
     plt.savefig('xray_scint_attenuation.png', dpi=300, bbox_inches='tight', facecolor='white')
@@ -305,7 +326,7 @@ def build_images(df, params):
     print(f"  Максимум/пиксель: {int(np.max(counts_T))}")
     print(f"  Среднее/пиксель (ненулевые): {np.mean(counts_T[counts_T>0]):.1f}")
     print(f"  Среднее (фон, без золота): {mean_bg_counts:.1f}")
-    print(f"  Аттенюация макс: {np.max(attenuation_smooth):.3f}")
+    print(f"  Аттенюация макс: {np.max(attenuation[~np.isinf(attenuation)]):.3f}")
     
     # Статистика по золоту и фону
     gold_mask = geometry_T == 1
@@ -324,7 +345,6 @@ def build_images(df, params):
              counts=counts_T,
              counts_smooth=counts_T_smooth,
              attenuation=attenuation,
-             attenuation_smooth=attenuation_smooth,
              geometry=geometry_T,
              x_edges=x_edges,
              y_edges=y_edges,
