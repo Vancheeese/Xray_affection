@@ -1,0 +1,4 @@
+/home/iptch/geant4/new/CMakeFiles/sim.dir
+/home/iptch/geant4/new/CMakeFiles/Tutorial.dir
+/home/iptch/geant4/new/CMakeFiles/edit_cache.dir
+/home/iptch/geant4/new/CMakeFiles/rebuild_cache.dir

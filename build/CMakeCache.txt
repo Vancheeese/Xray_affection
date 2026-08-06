@@ -293,11 +293,29 @@ PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 //The directory containing a CMake configuration file for PTL.
 PTL_DIR:PATH=/home/iptch/geant4/geant4-v11.3.2-install/lib/cmake/Geant4/PTL
 
+//The directory containing a CMake configuration file for Qt53DCore.
+Qt53DCore_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt53DCore
+
+//The directory containing a CMake configuration file for Qt53DExtras.
+Qt53DExtras_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt53DExtras
+
+//The directory containing a CMake configuration file for Qt53DInput.
+Qt53DInput_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt53DInput
+
+//The directory containing a CMake configuration file for Qt53DLogic.
+Qt53DLogic_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt53DLogic
+
+//The directory containing a CMake configuration file for Qt53DRender.
+Qt53DRender_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt53DRender
+
 //The directory containing a CMake configuration file for Qt5Core.
 Qt5Core_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5Core
 
 //The directory containing a CMake configuration file for Qt5Gui.
 Qt5Gui_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5Gui
+
+//The directory containing a CMake configuration file for Qt5Network.
+Qt5Network_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5Network
 
 //The directory containing a CMake configuration file for Qt5OpenGL.
 Qt5OpenGL_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Qt5OpenGL
@@ -669,10 +687,10 @@ X11_xcb_xinput_INCLUDE_PATH:PATH=X11_xcb_xinput_INCLUDE_PATH-NOTFOUND
 X11_xcb_xinput_LIB:FILEPATH=X11_xcb_xinput_LIB-NOTFOUND
 
 //Path to a file.
-X11_xcb_xkb_INCLUDE_PATH:PATH=X11_xcb_xkb_INCLUDE_PATH-NOTFOUND
+X11_xcb_xkb_INCLUDE_PATH:PATH=/usr/include
 
 //Path to a library.
-X11_xcb_xkb_LIB:FILEPATH=X11_xcb_xkb_LIB-NOTFOUND
+X11_xcb_xkb_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libxcb-xkb.so
 
 //Path to a file.
 X11_xcb_xrm_INCLUDE_PATH:PATH=X11_xcb_xrm_INCLUDE_PATH-NOTFOUND

@@ -85,7 +85,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     }
 
     // ========== СЦИНТИЛЛЯТОР (CsI/Tl или YAG/Tb) ==========
-    G4double csiThickness = fCsIThickness;
+    G4double csiThickness = scintillatorThickness;
     G4double csiSizeX = pixelSize * gridSize;
     G4double csiSizeY = pixelSize * gridSize;
 

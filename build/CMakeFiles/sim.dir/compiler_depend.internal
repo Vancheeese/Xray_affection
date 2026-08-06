@@ -251,6 +251,7 @@ CMakeFiles/sim.dir/sim.cc.o
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProductionCuts.hh
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ProductionCutsTable.hh
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4PseudoScene.hh
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Qt3D.hh
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RNGHelper.hh
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RayTracer.hh
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RayTracerX.hh

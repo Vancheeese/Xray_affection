@@ -617,6 +617,7 @@ CMakeFiles/sim.dir/sim.cc.o: /home/iptch/geant4/new/sim.cc \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4OpenGLQt.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4OpenGLStoredQt.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4RayTracerX.hh \
+ /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4Qt3D.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ToolsSGX11GLES.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ToolsSGX11ZB.hh \
  /home/iptch/geant4/geant4-v11.3.2-install/include/Geant4/G4ToolsSGQtGLES.hh \

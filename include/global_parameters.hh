@@ -13,10 +13,16 @@ extern G4int gridSize;
 // Ширина и толщина золотых полосок (по умолчанию 50 мкм)
 extern G4double slitWidth;
 
-// Количество частиц на один пиксель (по умолчанию 10)
+// Энергия рентгеновского излучения (по умолчанию 30 кэВ)
+extern G4double initialEnergy;
+
+// Количество частиц на пиксель (по умолчанию 10)
 extern G4int particlesPerPixel;
 
-// Тип сцинтиллятора: 0 = CsI(Tl), 1 = YAG(Tb)
+// Тип сцинтиллятора: 0 = CsI(Tl), 1 = YAG(Tb) (по умолчанию 1)
 extern G4int scintillatorType;
+
+// Толщина сцинтиллятора (по умолчанию 300 мкм)
+extern G4double scintillatorThickness;
 
 #endif

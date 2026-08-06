@@ -1,4 +1,5 @@
 
+# CMake
 build/*
 !build/one.mac
 !build/img.py
@@ -15,5 +16,12 @@ build/*
 !build/build_xray_scintillation.py
 !build/build_xray_direct.py
 !build/snr_direct.py
+
+# CMake файлы
+CMakeLists.txt
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+install_manifest.txt
 
 .vscode
