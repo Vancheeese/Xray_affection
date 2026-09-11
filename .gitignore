@@ -1,27 +1,55 @@
 
-# CMake
+# CMake: каталог build не коммитим целиком...
 build/*
-!build/one.mac
-!build/img.py
-!build/energy.mac
-!build/vis.mac
-!build/run_thickness.sh
-!build/fwhm.py
-!build/oimg.py
-!build/build_xray_image.py
-!build/generate_mac.py
-!build/oimg.py
-!build/run_batch_thickness.sh
-!build/snr_analysis.py
-!build/build_xray_scintillation.py
-!build/build_xray_direct.py
-!build/snr_direct.py
 
-# CMake файлы
-CMakeLists.txt
+# ...но скрипты и макросы из build — коммитим (правила ! идут после build/*)
+!build/*.py
+!build/*.sh
+!build/*.mac
+!build/*.md
+!build/*.cc
+!build/*.hh
+
+# --- Артефакты сборки CMake (явно, чтобы не попадали в коммит) ---
+build/CMakeFiles/
+build/CMakeCache.txt
+build/Makefile
+build/cmake_install.cmake
+build/CTestTestfile.cmake
+build/*.cmake
+build/*.o
+build/*.so
+build/*.a
+# собираемый исполняемый файл
+build/sim
+
+# --- Результаты моделирования и анализа в build ---
+build/results/
+build/output.root
+build/hits_data.csv
+build/*.npy
+build/*.png
+build/*_results.txt
+build/*_spectrum.txt
+build/simulation_log.txt
+__pycache__/
+*.pyc
+
+# --- Артефакты сборки в корне проекта ---
 CMakeCache.txt
-cmake_install.cmake
+CMakeFiles/
 Makefile
+cmake_install.cmake
 install_manifest.txt
+
+# --- Результаты расчётов (спектры, логи, графики) ---
+*.root
+*.csv
+*.npy
+*.log
+*_results.txt
+*_spectrum.txt
+simulation_log.txt
+results/
 
 .vscode

@@ -40,7 +40,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
 
     // ========== ЗОЛОТЫЕ ПОЛОСКИ (объект для ослабления рентгена) ==========
     G4double leadSize = pixelSize * gridSize;
-    G4double slitThickness = slitWidth;
+    G4double slitThickness = 15 * um;
     G4double slitPeriod = slitWidth + slitWidth;
     G4double slitLengthY = leadSize;
 
@@ -61,7 +61,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
 
     G4LogicalVolume* logicLead = new G4LogicalVolume(solidSlit, goldMat, "logicLead");
 
-    G4VisAttributes* leadVisAtt = new G4VisAttributes(G4Color(1.0, 0.84, 0.0, 0.8));
+    G4VisAttributes* leadVisAtt = new G4VisAttributes(G4Color(1.0, 0.84, 0.0, 1.0));
     leadVisAtt->SetForceSolid(true);
     logicLead->SetVisAttributes(leadVisAtt);
 
@@ -131,13 +131,14 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         csiMat->SetMaterialPropertiesTable(csiMPT);
 
     } else {
-        // --- YAG(Tb) ---
-        G4cout << "Используется: YAG(Tb)" << G4endl;
+        // --- YAG(Tb) 6% ---
+        // Массовые доли: Y=0.4135, Tb=0.0472, Al=0.2225, O=0.3167
+        G4cout << "Используется: YAG(Tb) 6%" << G4endl;
         csiMat = new G4Material("YAG_Tb", 4.55 * g/cm3, 4);
-        csiMat->AddElement(nist->FindOrBuildElement("Y"),  3);
-        csiMat->AddElement(nist->FindOrBuildElement("Al"), 5);
-        csiMat->AddElement(nist->FindOrBuildElement("O"), 12);
-        csiMat->AddElement(nist->FindOrBuildElement("Tb"), 1); // легирующая примесь
+        csiMat->AddElement(nist->FindOrBuildElement("Y"),  0.4135);
+        csiMat->AddElement(nist->FindOrBuildElement("Tb"), 0.0472);
+        csiMat->AddElement(nist->FindOrBuildElement("Al"), 0.2225);
+        csiMat->AddElement(nist->FindOrBuildElement("O"),  0.3167);
 
         G4MaterialPropertiesTable* csiMPT = new G4MaterialPropertiesTable();
 
@@ -181,7 +182,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         logicCsI, "physCsI", logicWorld, false, 2, checkOverlaps);
 
     // Визуализация CsI
-    G4VisAttributes* csiVisAtt = new G4VisAttributes(G4Color(0.0, 1.0, 0.0, 0.6));
+    G4VisAttributes* csiVisAtt = new G4VisAttributes(G4Color(0.0, 1.0, 0.0, 1.0));
     csiVisAtt->SetForceSolid(true);
     logicCsI->SetVisAttributes(csiVisAtt);
 
