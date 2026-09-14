@@ -1,288 +1,283 @@
-# Xray Affection — Geant4 Simulation
+# Рентгеновский сцинтилляционный детектор — модель Geant4
 
-Моделирование взаимодействия рентгеновского излучения с металлическими полосками и регистрацией через сцинтилляцию.
+Моделирование прямого получения рентгеновского изображения: узкий пучок
+моноэнергетичных фотонов проходит через золотую маску-полоски, создаёт
+сцинтилляцию в кристалле, часть оптических фотонов доходит до кремниевого
+фотодетектора и регистрируется как хит. По собранным хитам строится
+рентгеновское изображение, оцениваются SNR и пространственное разрешение
+(FWHM краевого перехода) — в том числе в зависимости от толщины сцинтиллятора.
+
+Сборка/прогон: **Geant4 11.3.2**, многопоточный режим (`G4MTRunManager`, 12 потоков).
 
 ---
 
-## 📁 Структура проекта
+## 1. Что моделируется
+
+Стек вдоль оси Z (рентген летит в направлении +Z):
+
+| Элемент | Толщина | Материал | Позиция / комментарий |
+|---|---|---|---|
+| Источник γ | — | — | узкий пучок вдоль +Z, `Z = −10 см`, энергия `initialEnergy` |
+| Золотая маска (тест-объект) | 15 мкм | `G4_Au` | `Z = 0`; полоски шириной `slitWidth` с такими же зазорами, число `= pixelSize·gridSize / (2·slitWidth)` |
+| Сцинтиллятор | `scintillatorThickness` | CsI(Tl) или YAG(Tb) 6 % | касается задней грани полосок |
+| Оптический клей | 1 мкм | C, `n = 1.5` | сцинтиллятор → Si |
+| Фотодетектор | 30 мкм | `G4_Si` | чувствительный объём, пишет хиты в `hits_data.csv` |
+
+Поперечный размер стека — `pixelSize × gridSize` (по умолчанию 350 × 350 мкм).
+Границы «сцинтиллятор–клей» и «клей–Si» заданы как диэлектрические
+оптические поверхности (модель `unified`, `polished`).
+
+**Физика:** `G4EmLivermorePhysics` (рентгеновский диапазон) + `G4OpticalPhysics`.
+
+**Оптические свойства сцинтилляторов** (`PMDetectorConstruction.cc`):
+
+| Параметр | CsI(Tl) (`scintillatorType = 0`) | YAG(Tb) 6 % (`scintillatorType = 1`) |
+|---|---|---|
+| Выход фотонов | 52 000 / МэВ | 28 000 / МэВ |
+| Показатель преломления | 1.79 | 1.84 |
+| Время сцинтилляции | 68 нс (7 %) + 950 нс (93 %) | 65 нс (85 %) + 160 нс (15 %) |
+| Пик спектра | ≈ 2.25 эВ | ≈ 2.30 эВ |
+
+Si принят сильно поглощающим для оптических фотонов
+(`ABSLENGTH` = 15/10/5 мкм при 1.5/2.5/3.5 эВ), так что в хиты попадают
+фотоны, дошедшие до передней грани кремния.
+
+---
+
+## 2. Структура проекта
 
 ```
-project/
-├── CMakeLists.txt
-├── sim.cc                    # Точка входа (main)
+.
+├── CMakeLists.txt              # цель sim = sim.cc + src/*.cc
+├── sim.cc                      # main: run manager, физика, геометрия, режимы MT/ST
 ├── src/
-│   ├── global_parameters.cc  # ⚙️ Глобальные параметры (МЕНЯТЬ ЗДЕСЬ)
-│   ├── global_parameters.hh  # Объявления параметров
-│   ├── PMDetectorConstruction.cc
-│   ├── PMPrimaryGenerator.cc
-│   ├── PMPhysicsList.cc
-│   └── ...
-├── include/
-│   └── ...
-├── macros/
-│   └── one.mac               # Генерируется через generate_mac.py
+│   ├── global_parameters.cc    # ⚙️ ВСЕ НАСТРОЙКИ ЗДЕСЬ
+│   ├── PMDetectorConstruction.cc   # геометрия, материалы, оптические поверхности
+│   ├── PMPrimaryGenerator.cc       # скан пучком по пиксельной сетке
+│   ├── PMSensitiveDetector.cc      # запись хитов в hits_data.csv
+│   ├── PMPhysicsList.cc            # Livermore EM + Optical
+│   ├── PMActionInitialization.cc
+│   └── PMRunAction.cc              # служебный output.root (не используется в анализе)
+├── include/                    # заголовки + global_parameters.hh
+├── macros/                     # *.mac, копируются в build при cmake
 └── build/
-    ├── generate_mac.py        # 🛠 Генератор one.mac
-    ├── run_batch_thickness.sh # 🚀 Пакетный запуск
-    ├── build_xray_scintillation.py  # 📊 Постобработка (изображения)
-    ├── snr_analysis.py        # 📈 Анализ SNR
-    └── oimg.py                # 🖼 Простая визуализация
+    ├── generate_mac.py         # генератор one.mac по параметрам
+    ├── sim_params.py           # чтение параметров из global_parameters.cc
+    ├── analyze_xray_image.py   # 2D-изображение по оптическим фотонам
+    ├── analyze_snr.py          # SNR + маска золотых полос
+    ├── analyze_edge.py         # профиль I(x), erf-фит, FWHM края
+    ├── plot_dependencies.py    # FWHM(толщина), SNR(толщина)
+    ├── run_batch_sim_only.sh   # 🚀 пакетная симуляция по толщинам (с resume)
+    ├── run_batch_analysis.sh   # 📊 пакетный анализ по results/*um
+    ├── run_batch_thickness.sh  # то же самое «одним скриптом» (сим + анализ)
+    ├── results/<толщина>um/    # результаты
+    └── logs/                   # логи прогонов
 ```
 
 ---
 
-## 🛠 Генерация mac-файла: `generate_mac.py`
+## 3. Требования и сборка
 
-**Что делает:**
-Читает `global_parameters.cc` и автоматически создаёт `one.mac` с правильным количеством событий.
+- Geant4 11.3.2 (с поддержкой многопоточности и визуализации);
+- CMake ≥ 3.2, компилятор с C++17;
+- Python 3 с пакетами `numpy`, `matplotlib`, `scipy`;
+- Linux/WSL: скрипты анализа используют `grep`/`awk` для разбора больших CSV.
 
-**Формула:**
-```
-total_events = gridSize × gridSize × particlesPerPixel
-```
-
-**Запуск:**
 ```bash
-cd build
-python3 generate_mac.py
+source <geant4-install>/bin/geant4.sh        # окружение Geant4
+
+mkdir -p build && cd build
+cmake -DGeant4_DIR=<geant4-install>/lib/cmake/Geant4 ..
+make -j$(nproc)
 ```
 
-**Результат:**
-Создаётся файл `build/one.mac`:
-```
-/run/initialize
-
-# Автоматически сгенерировано: gridSize=100, particlesPerPixel=10
-# Общее количество событий = 100² × 10 = 100,000
-/run/beamOn 100000
-```
-
-**Когда использовать:**
-- После изменения `gridSize` или `particlesPerPixel` в `global_parameters.cc`
-- Перед каждым запуском `./sim one.mac`
+`cmake` заодно копирует `macros/*.mac` в каталог сборки.
 
 ---
 
-## 🚀 Пакетный запуск: `run_batch_thickness.sh`
+## 4. Параметры: `src/global_parameters.cc`
 
-**Что делает:**
-Запускает симуляцию для нескольких толщин сцинтиллятора автоматически.
+Текущие значения в репозитории:
 
-**Запуск:**
+```cpp
+G4double pixelSize            = 3.5 * um;   // размер пикселя
+G4int    gridSize             = 100;        // пикселей по оси (поле 350 × 350 мкм)
+G4double slitWidth            = 15 * um;    // ширина золотой полоски = ширине зазора
+G4int    particlesPerPixel    = 100;        // первичных фотонов на пиксель
+G4int    scintillatorType     = 1;          // 0 = CsI(Tl), 1 = YAG(Tb)
+G4double scintillatorThickness= 40 * um;    // толщина сцинтиллятора
+G4double initialEnergy        = 8. * keV;   // энергия рентгена
+```
+
+| Параметр | На что влияет |
+|---|---|
+| `pixelSize` | масштаб всей установки (маска, сцинтиллятор, Si, область сканирования) |
+| `gridSize` | поле обзора и число событий |
+| `slitWidth` | период золотой маски (полоска + зазор) |
+| `particlesPerPixel` | статистика и время счёта |
+| `scintillatorType` | материал и все оптические свойства сцинтиллятора |
+| `scintillatorThickness` | светособирающая способность, разрешение, SNR |
+| `initialEnergy` | ослабление в золоте и профиль края |
+
+Число событий задаётся автоматически:
+
+```
+total_events = gridSize × gridSize × particlesPerPixel     // сейчас 100² × 100 = 1 000 000
+```
+
+**После любого изменения этих значений нужен `make`, а при изменении
+`gridSize` / `particlesPerPixel` — ещё и перегенерация `one.mac`.**
+
+---
+
+## 5. Одинарный прогон
+
 ```bash
 cd build
-bash run_batch_thickness.sh
+python3 generate_mac.py     # пишет one.mac с нужным числом событий
+./sim one.mac               # результат: hits_data.csv в текущей папке
 ```
 
-**Как меняются толщины:**
+`generate_mac.py` читает `gridSize` и `particlesPerPixel` из
+`src/global_parameters.cc` и кладёт `one.mac` рядом с собой.
 
-В файле `run_batch_thickness.sh` найдите строку:
+Интерактивный режим с графикой (выполняется `macros/vis.mac`):
+
 ```bash
-THICKNESSES=(20 100 300)
+./sim
 ```
 
-Замените на нужные значения (в мкм):
+### Как работает генератор событий
+
+Пучок сканирует поле по пиксельной сетке: `particlesPerPixel` первичных
+фотонов на центр каждого пикселя `gridSize × gridSize`, координаты берутся
+из центров бинов, из которых потом строится изображение (без разброса
+внутри пикселя). Счётчик пикселей общий для всех потоков, по заполнении
+всего поля вызывается `AbortRun()`, поэтому реальное число событий
+совпадает с `gridSize² × particlesPerPixel` даже при многопоточности.
+
+### Формат `hits_data.csv`
+
+Разделитель — табуляция (несмотря на расширение `.csv`):
+
+```
+Energy_eV	PosX_um	PosY_um	Type	EventID
+```
+
+В файл попадают все частицы, долетевшие до Si-детектора; анализ
+использует только строки с `Type = opticalphoton`. Каждая трековая
+частица останавливается на первом хите.
+
+---
+
+## 6. Макросы (`macros/`)
+
+| Файл | Назначение |
+|---|---|
+| `one.mac` | шаблон одиночного прогона (`build/one.mac` перезаписывает `generate_mac.py`) |
+| `run.mac` | пример: 6 потоков, `/run/beamOn 100000` и цикл по энергии 50–150 кэВ через `energy.mac` (значения устарели, под текущую 8 кэВ установку не настроены) |
+| `runone.mac` | 12 потоков, `/run/beamOn 10000000` — прогон «до упора» |
+| `vis.mac` | визуализация геометрии и треков (грузится автоматически при запуске без аргументов) |
+| `debug_vis.mac` | отладочная визуализация, 10 событий |
+| `energy.mac` | параметрический `/gun/energy {Energy} keV` для сканирования по энергии через `/control/loop` (см. `run.mac`) |
+
+---
+
+## 7. Анализ одной симуляции
+
+Все скрипты читают геометрию из `src/global_parameters.cc` (через
+`sim_params.py`), фильтруют оптические фотоны и строят гистограмму
+с разрешением 1 мкм/пиксель. Запуск из `build/`, путь к CSV —
+необязательный аргумент (по умолчанию `./hits_data.csv`).
+
 ```bash
-THICKNESSES=(10 20 30 50 100 200 500)
+python3 analyze_xray_image.py   # xray_image.png, xray_image.npz
+python3 analyze_snr.py          # snr_mask.png, snr_results.txt
+python3 analyze_edge.py         # edge_profile.png, edge_profile_results.txt
 ```
 
-**Что происходит при запуске:**
-1. Для каждой толщины:
-   - Меняется `fCsIThickness` в `include/PMDetectorConstruction.hh`
-   - Пересобирается проект (`make`)
-   - Запускается `./sim one.mac`
-   - Запускается `python3 build_xray_scintillation.py`
-   - Запускается `python3 snr_analysis.py`
-2. Результаты сохраняются в `build/results/{thickness}um/`
+- **SNR** = (средний фон без золота − средний сигнал под золотом) / σ фона;
+- **FWHM** — ширина краевого перехода профиля `I(x)`, полученная
+  аппроксимацией функции erf; это и есть оценка пространственного разрешения.
 
-**Структура результатов:**
+---
+
+## 8. Пакетный прогон по толщинам сцинтиллятора
+
+Толщина меняется переписыванием `scintillatorThickness` в
+`global_parameters.cc`, поэтому каждый пункт считается своей сборкой.
+
+**Вариант А (рекомендуемый) — счёт и анализ раздельно**, чтобы
+долгий счёт можно было уронить/возобновить независимо от анализа:
+
+```bash
+cd build
+bash run_batch_sim_only.sh      # только симуляция всех толщин
+bash run_batch_analysis.sh      # анализ всех папок results/*um + общий график
+```
+
+Оба скрипта устойчивы к обрыву SSH (`trap '' HUP`, лог в `build/logs/`)
+и продолжают с места обрыва: готовые толщины пропускаются.
+Список толщин — массив `THICKNESSES=(20 30 40)` вверху скрипта.
+
+Полезные запуски:
+
+```bash
+tmux new -s sim                     # переживает закрытие терминала
+bash run_batch_sim_only.sh
+
+ONLY=40 bash run_batch_sim_only.sh  # одна толщина
+FORCE=1 bash run_batch_sim_only.sh  # пересчитать всё заново
+ONLY=30um bash run_batch_analysis.sh
+tail -f build/logs/sim_*.log
+```
+
+Скрипт симуляции хранит в папке толщины метку `.sim_done` с отпечатком
+конфигурации (все параметры, кроме толщины). Если вы поменяли энергию,
+сетку или тип сцинтиллятора — старые данные будут пересчитаны автоматически.
+
+**Вариант Б — всё одним скриптом** (`run_batch_thickness.sh`):
+симуляция + анализ + общий график за один проход, без механизма resume.
+
+---
+
+## 9. Где результаты
+
 ```
 build/results/
 ├── 20um/
-│   ├── hits_data.csv
-│   ├── xray_scint_full.png
-│   ├── xray_scint_attenuation.png
-│   ├── snr_histogram.png
-│   └── params.txt
-├── 100um/
-│   └── ...
-└── 300um/
-    └── ...
+│   ├── hits_data.csv               # сырые хиты (сотни МБ)
+│   ├── params.txt                  # толщина, дата, отпечаток конфигурации
+│   ├── .sim_done                   # метка завершённой симуляции
+│   ├── xray_image.png / .npz       # изображение
+│   ├── snr_mask.png, snr_results.txt
+│   └── edge_profile.png, edge_profile_results.txt
+├── 30um/ ...
+└── 40um/ ...
+
+build/resolution_vs_thickness.png   # FWHM(t) и SNR(t) — plot_dependencies.py
+build/logs/                         # логи прогонов
 ```
+
+Пример текущих результатов (YAG(Tb), 8 кэВ, полоски 15 мкм, 100 фотонов/пиксель):
+
+| Толщина, мкм | FWHM края, мкм | SNR |
+|---|---|---|
+| 20 | 5.75 | 0.89 |
+| 30 | 5.34 | 0.02 |
+| 40 | 4.90 | 0.39 |
 
 ---
 
-## 🎯 Единичный запуск
+## 10. Важно
 
-**1. Изменить толщину сцинтиллятора:**
-
-Откройте `include/PMDetectorConstruction.hh`:
-```cpp
-G4double fCsIThickness = 50 * um;  // ← МЕНЯТЬ ЗДЕСЬ (50 мкм)
-```
-
-**2. Сгенерировать mac-файл:**
-```bash
-cd build
-python3 generate_mac.py
-```
-
-**3. Запустить симуляцию:**
-```bash
-./sim one.mac
-```
-
-**4. Постобработка:**
-```bash
-python3 build_xray_scintillation.py   # Полные изображения
-python3 snr_analysis.py               # SNR анализ
-```
-
----
-
-## ⚙️ Глобальные параметры: `global_parameters.cc`
-
-Файл: `src/global_parameters.cc`
-
-### Доступные параметры:
-
-```cpp
-// 1. Размер пикселя детектора (мкм)
-G4double pixelSize = 3.5 * um;
-
-// 2. Количество пикселей по одной оси (сетка gridSize × gridSize)
-G4int gridSize = 100;
-
-// 3. Ширина золотых полосок и зазоров (мкм)
-G4double slitWidth = 25. * um;
-
-// 4. Частиц на один пиксель
-G4int particlesPerPixel = 10;
-
-// 5. Тип сцинтиллятора
-G4int scintillatorType = 0;  // 0 = CsI(Tl), 1 = YAG(Tb)
-```
-
-### Что меняется при изменении параметров:
-
-| Параметр | Влияние |
-|----------|---------|
-| `pixelSize` | Размер пикселя → автоматически масштабируется вся установка (детектор, сцинтиллятор, полоски, область стрельбы) |
-| `gridSize` | Количество пикселей → влияет на область стрельбы и общее число событий |
-| `slitWidth` | Ширина золотых полосок и зазоров |
-| `particlesPerPixel` | Статистика → больше частиц = лучше статистика, но дольше |
-| `scintillatorType` | Тип сцинтиллятора: 0=CsI(Tl), 1=YAG(Tb) |
-
-### Примеры:
-
-**Высокое разрешение:**
-```cpp
-G4double pixelSize = 5. * um;
-G4int gridSize = 200;
-```
-
-**Быстрый тест:**
-```cpp
-G4int gridSize = 50;
-G4int particlesPerPixel = 1;
-```
-
-**Другой сцинтиллятор:**
-```cpp
-G4int scintillatorType = 1;  // YAG(Tb) вместо CsI(Tl)
-```
-
----
-
-## 📊 Постобработка
-
-### `build_xray_scintillation.py`
-
-Создает 4 изображения:
-1. Карта количества оптических фотонов
-2. Рентгеновское изображение (аттенюация)
-3. Отношение сигнал/фон (I/I₀)
-4. Геометрия (золотые полоски)
-
-**Запуск:**
-```bash
-cd build
-python3 build_xray_scintillation.py
-```
-
-**Результаты:**
-- `xray_scint_full.png` — все 4 изображения
-- `xray_scint_attenuation.png` — только аттенюация (крупно)
-- `xray_scint_counts.png` — только количество фотонов (крупно)
-- `xray_scint_data.npz` — данные для анализа
-
-### `snr_analysis.py`
-
-Анализ соотношения сигнал/шум по фоновым пикселям.
-
-**Запуск:**
-```bash
-cd build
-python3 snr_analysis.py
-```
-
-**Результаты:**
-- `snr_histogram.png` — гистограмма распределения фотонов
-- `snr_results.txt` — текстовые результаты
-
-### `oimg.py`
-
-Простая визуализация (альтернатива `build_xray_scintillation.py`).
-
-**Запуск:**
-```bash
-cd build
-python3 oimg.py
-```
-
-**Результаты:**
-- `xray_image.png` — рентгеновское изображение
-- `xray_data.npz` — данные
-
----
-
-## 🔄 Полный рабочий цикл
-
-**Единичный запуск:**
-```bash
-# 1. Изменить параметры в src/global_parameters.cc
-# 2. Сгенерировать mac
-cd build
-python3 generate_mac.py
-
-# 3. Запустить симуляцию
-./sim one.mac
-
-# 4. Постобработка
-python3 build_xray_scintillation.py
-python3 snr_analysis.py
-```
-
-**Пакетный запуск (разные толщины):**
-```bash
-# 1. Изменить список толщин в run_batch_thickness.sh
-# THICKNESSES=(20 100 300)
-
-# 2. Запустить
-cd build
-bash run_batch_thickness.sh
-```
-
----
-
-## ⚠️ Важные заметки
-
-1. **После изменения `gridSize` или `particlesPerPixel`** — всегда запускайте `python3 generate_mac.py`
-
-2. **После изменения `fCsIThickness`** — необходим `make`
-
-3. **Файл `hits_data.csv`** — создаётся при запуске симуляции, содержит все зарегистрированные частицы
-
-4. **Кодировка** — Python-скрипты автоматически определяют кодировку файла (utf-8, cp1251, latin-1)
-
-5. **Windows PowerShell** — если скрипты не работают в PowerShell, используйте WSL или Git Bash
+1. Изменили C++ или `global_parameters.cc` → `make`.
+2. Изменили `gridSize` / `particlesPerPixel` → `python3 generate_mac.py`.
+3. `hits_data.csv` лежит **в текущей папке запуска** (обычно `build/`),
+   перед каждым прогоном пакетный скрипт удаляет его.
+4. `build/run_batch_*.sh` правят `src/global_parameters.cc` через `sed` —
+   не переписывайте строку `scintillatorThickness` в другой формат.
+5. `output.root` создаётся `PMRunAction`, но нtuple не заполняется:
+   единственный источник данных для анализа — `hits_data.csv`.
+6. Скрипты анализа рассчитаны на Linux/WSL (`grep`, `awk`); в чистом
+   Windows PowerShell они не работают.
