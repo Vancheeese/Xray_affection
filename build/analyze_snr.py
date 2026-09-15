@@ -72,15 +72,14 @@ num_slits = int(lead_size / slit_period)
 start_x = -num_slits * slit_period / 2.0 + slit_width / 2.0
 
 # Маска: True = есть золото, False = нет золота
+# (по центрам бинов, без округления int(): иначе при slitWidth=15 маска
+# покрывала 14 мкм из 15, и 1 мкм золота попадал в «фон»)
 mask_gold = np.zeros((nx, ny), dtype=bool)
 for i in range(num_slits):
     x_slit_center = start_x + i * slit_period
-    x_idx = int(x_slit_center - x_min)
-    half_w = int(slit_width / 2)
     # Золотая полоска: X в диапазоне [x_start, x_end], все Y
-    x_start = max(0, x_idx - half_w)
-    x_end = min(nx, x_idx + half_w)
-    mask_gold[x_start:x_end, :] = True
+    cols = np.abs(x_centers - x_slit_center) <= slit_width / 2
+    mask_gold[cols, :] = True
 
 # =============================================
 # SNR: фон vs сигнал
@@ -96,19 +95,36 @@ bg_std = background_pixels.std()
 sig_mean = signal_pixels.mean()
 sig_std = signal_pixels.std()
 
+# Шум — ТОЛЬКО случайная составляющая. bg_std для этого не годится: в него
+# входит детерминированная структура изображения (размытие краёв полос
+# на ~5 мкм при зазоре 15 мкм, решётка от пучка, бьющего в центры пикселей
+# с шагом pixelSize на гистограмме 1 мкм), которая растёт ∝ N, тогда как
+# шум ∝ √N — отсюда насыщение SNR при больших particlesPerPixel.
+# Полосы однородны вдоль Y, поэтому берём разность строк, сдвинутых на
+# 2 пикселя сканирования (целое число мкм-бинов): вся структура по X и
+# решётка пучка сокращаются, остаётся шум с дисперсией 2σ².
+# Края поля зрения исключаем: там свет уходит за край сцинтиллятора.
+shift = int(round(2 * pixel_size))
+margin = int(1.5 * params.get('scintillatorThickness', 40.0))
+Hc = H[:, margin:ny - margin]
+mask_c = mask_gold[:, margin:ny - margin]
+diff = Hc[:, shift:] - Hc[:, :-shift]
+noise_std = diff[~mask_c[:, shift:]].std() / np.sqrt(2)
+
 # SNR = (фон - сигнал) / шум_фона
-snr = (bg_mean - sig_mean) / bg_std if bg_std > 0 else 0
+snr = (bg_mean - sig_mean) / noise_std if noise_std > 0 else 0
 
 print(f"\n=== SNR Analysis ===")
 print(f"Пикселей фона (без золота): {len(background_pixels)}")
 print(f"Пикселей сигнала (с золотом): {len(signal_pixels)}")
 print(f"\nФон (без золота):")
 print(f"  mean = {bg_mean:.2f}")
-print(f"  std  = {bg_std:.2f}")
+print(f"  std  = {bg_std:.2f}  (включая структуру изображения)")
 print(f"\nСигнал (с золотом):")
 print(f"  mean = {sig_mean:.2f}")
 print(f"  std  = {sig_std:.2f}")
-print(f"\nSNR = (bg_mean - sig_mean) / bg_std = {snr:.2f}")
+print(f"\nШум (случайная составляющая, по разности строк): {noise_std:.2f}")
+print(f"\nSNR = (bg_mean - sig_mean) / noise_std = {snr:.2f}")
 print(f"\nSNR={snr:.4f}")
 
 # =============================================
@@ -121,6 +137,8 @@ results_path = os.path.join(output_dir, 'snr_results.txt')
 with open(results_path, 'w') as f:
     f.write(f"Background mean = {bg_mean:.4f}\n")
     f.write(f"Signal mean = {sig_mean:.4f}\n")
+    f.write(f"Background std (with structure) = {bg_std:.4f}\n")
+    f.write(f"Noise std = {noise_std:.4f}\n")
     f.write(f"SNR = {snr:.4f}\n")
     f.write(f"SNR={snr:.4f}\n")
 print(f"Результаты сохранены: {results_path}")
