@@ -126,6 +126,12 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         G4double x = GetDetectorBinCenter(currentX, range, numBins);
         G4double y = GetDetectorBinCenter(currentY, range, numBins);
 
+        // Равномерно по площади пикселя, а не строго в его центр: иначе
+        // на изображении с шагом 1 мкм появляется детерминированная решётка
+        // с периодом pixelSize, которая растёт ∝ N и портит оценку шума/SNR.
+        x += (G4UniformRand() - 0.5) * pixelSize;
+        y += (G4UniformRand() - 0.5) * pixelSize;
+
         SetSourcePosition(x, y);
         energy = fParticleGun->GetParticleEnergy();
 
