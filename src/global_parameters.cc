@@ -1,22 +1,17 @@
 #include "global_parameters.hh"
 
-// Размер пикселя детектора (10 мкм)
 G4double pixelSize = 3.5 * um;
-
-// Размер сетки (количество пикселей по одной оси)
-G4int gridSize = 100;
-
-// Ширина и толщина золотых полосок (50 мкм)
-G4double slitWidth = 15 * um;
-
-// Количество частиц на пиксель
-G4int particlesPerPixel = 100;
-
-// Тип сцинтиллятора: 0 = CsI(Tl), 1 = YAG(Tb)
-G4int scintillatorType = 1;
-
-// Толщина сцинтиллятора (300 мкм)
-G4double scintillatorThickness = 40 * um;
-
-// Энергия рентгеновского излучения (30 кэВ)
+G4int    gridSize  = 100;
+G4double slitWidth = 30 * um;
+G4int    particlesPerPixel = 20;
+G4double scintillatorThickness = 50 * um;
 G4double initialEnergy = 8. * keV;
+
+// ===== Оптическая система =====
+G4double lensMagnification   = 2.7;
+G4double lensPlaneZ          = 15.0 * mm;        // центр линзы
+G4double lensFocalLength     = 10.93 * mm;       // пересчитается в Construct()
+G4double lensCurvatureRadius = 10.06 * mm;       // R = 2(n-1)f
+G4double lensCenterThickness = 40.0 * um;        // под DOF ≈ 0.3 мм
+G4double lensRefractiveIndex = 1.46;             // SiO2 (плавленый кварц)
+G4double lensRadius          = 0.64 * mm;        // оценка апертуры ≈ sqrt(R*t)

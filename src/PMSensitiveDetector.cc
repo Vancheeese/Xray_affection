@@ -4,9 +4,7 @@
 #include "G4OpticalPhoton.hh"
 #include "G4SystemOfUnits.hh"
 #include <cmath>
-#include "G4RunManager.hh"
 #include "G4Event.hh"
-#include "G4Threading.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 

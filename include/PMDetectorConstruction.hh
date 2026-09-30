@@ -4,7 +4,6 @@
 #include "G4VUserDetectorConstruction.hh"
 
 #include "G4Box.hh"
-
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4PVPlacement.hh"
@@ -19,6 +18,7 @@
 #include "G4SDManager.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalBorderSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 
 #include "PMSensitiveDetector.hh"
 
@@ -31,13 +31,11 @@ public:
     virtual G4VPhysicalVolume *Construct();
 
 private:
-    G4LogicalVolume *logicDetector;
-    G4LogicalVolume* logicCsI = nullptr;  // volume for CsI scintillator
+    G4LogicalVolume *logicDetector = nullptr;
+    G4LogicalVolume *logicScintillator = nullptr;
+    G4LogicalVolume *logicLens = nullptr;
 
     virtual void ConstructSDandField();
 };
-
-extern G4double leadThickness;
-extern G4String material;
 
 #endif

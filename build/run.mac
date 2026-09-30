@@ -1,6 +1,0 @@
-/run/numberOfThreads 6
-/run/initialize
-/run/beamOn 100000
-
-/control/loop energy.mac Energy 50 150 10
-

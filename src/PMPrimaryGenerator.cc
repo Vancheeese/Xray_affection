@@ -56,8 +56,6 @@ void PMPrimaryGenerator::SetSourcePosition(G4double x, G4double y)
     fParticleGun->SetParticlePosition(pos);
 }
 
-// ??????? ??? ????????? ?????? ???? ????????? ?? ???????
-// ????????? ? ???????? ?? SensitiveDetector
 G4double GetDetectorBinCenter(int index, G4double size, int numBins)
 {
     G4double step = (2.0 * size) / numBins;  // step = 10 ?? / 25 = 0.4 ??
@@ -67,7 +65,6 @@ G4double GetDetectorBinCenter(int index, G4double size, int numBins)
 
 void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
 {
-    // ??????? ???????? ?????
     if (fIsFinished.load()) {
         return;
     }
@@ -76,7 +73,6 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     G4bool shouldGenerate = false;
     G4bool needAbort = false;
 
-    // ??????????? ?????? ??? ?????????? ???????
     {
         G4AutoLock lock(&pixelMutex);
 
@@ -87,7 +83,6 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         G4int particlesInPixel = fParticlesEmittedInCurrentPixel.load();
 
         if (particlesInPixel >= particlesPerPixel) {
-            // ????????? ? ?????????? ???????
             fParticlesEmittedInCurrentPixel = 0;
             currentX++;
 
@@ -101,7 +96,6 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
                         << ": All pixels processed." << G4endl;
                     needAbort = true;
                     lock.unlock();
-                    // ??????????? ?????????
                     G4RunManager::GetRunManager()->AbortRun();
                     return;
                 }
@@ -111,12 +105,10 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
             fGlobalPixelY = currentY;
         }
 
-        // ??????????? ???????
         fParticlesEmittedInCurrentPixel++;
         shouldGenerate = true;
     }
 
-    // ?????????? ??????? ?????? ???? ?? ?????????
     if (shouldGenerate && !fIsFinished.load()) {
         // Рассчитываем координаты частиц по размеру области, как и в SensitiveDetector
         const G4double range = pixelSize * gridSize / 2;   
@@ -125,6 +117,12 @@ void PMPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
         // Генерируем частицы по размеру области
         G4double x = GetDetectorBinCenter(currentX, range, numBins);
         G4double y = GetDetectorBinCenter(currentY, range, numBins);
+
+        // Равномерно по площади пикселя, а не строго в его центр: иначе
+        // на изображении с шагом 1 мкм появляется детерминированная решётка
+        // с периодом pixelSize, которая растёт ∝ N и портит оценку шума/SNR.
+        x += (G4UniformRand() - 0.5) * pixelSize;
+        y += (G4UniformRand() - 0.5) * pixelSize;
 
         SetSourcePosition(x, y);
         energy = fParticleGun->GetParticleEnergy();
