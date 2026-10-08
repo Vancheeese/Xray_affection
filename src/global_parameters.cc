@@ -2,7 +2,7 @@
 
 G4double pixelSize = 3.5 * um;
 G4int    gridSize  = 100;
-G4double slitWidth = 30 * um;
+G4double slitWidth = 15 * um;
 G4int    particlesPerPixel = 20;
 G4double scintillatorThickness = 50 * um;
 G4double initialEnergy = 8. * keV;

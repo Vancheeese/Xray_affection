@@ -65,7 +65,7 @@ print(f"Диапазон Y (объект): [{y_obj.min():.1f}, {y_obj.max():.1f}
 
 # --- Создаём 2D гистограмму в координатах объекта ---
 # Размер бина = pixelSize (объектный пиксель) → 1 пиксель изображения = 1 пиксель сетки
-bin_size = pixel_size
+bin_size = pixel_size / M
 nx = int(round(lead_size / bin_size))
 ny = int(round(lead_size / bin_size))
 

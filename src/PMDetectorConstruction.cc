@@ -8,6 +8,7 @@
 #include "global_parameters.hh"
 #include <vector>
 #include <iostream>
+#include "G4MultiUnion.hh"
 
 PMDetectorConstruction::PMDetectorConstruction()
 {}
@@ -51,39 +52,65 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
         new G4PVPlacement(0, G4ThreeVector(0., 0., 0.),
                           logicWorld, "physWorld", 0, false, 0);
 
-    // ========== ЗОЛОТЫЕ ПОЛОСКИ ==========
+              // ========== ЗОЛОТАЯ СЕТКА ==========
     G4double leadSize      = pixelSize * gridSize;
-    G4double slitThickness = 15 * um;
-    G4double slitPeriod    = slitWidth + slitWidth;
     G4double slitLengthY   = leadSize;
+    G4double slitThickness = slitWidth;
+    G4double slitPeriod    = slitWidth + slitWidth;
+    G4double barWidth      = slitWidth;
+    G4double holeSize      = slitPeriod - barWidth;
 
-    G4int numSlits = (G4int)(leadSize / slitPeriod);
+    G4int    numSlits   = (G4int)(leadSize / slitPeriod);
     G4double totalWidth = numSlits * slitPeriod;
-    G4double startX     = -totalWidth / 2.0 + slitWidth / 2.0;
+    G4double startPos   = -totalWidth / 2.0;
 
     G4Material* goldMat = nist->FindOrBuildMaterial("G4_Au");
 
-    G4Box* solidSlit = new G4Box("solidSlit",
-                                 0.5 * slitWidth,
-                                 0.5 * slitLengthY,
-                                 0.5 * slitThickness);
+    // --- сплошная золотая пластина ---
+    G4Box* solidPlate = new G4Box("solidGoldPlate",
+                                  0.5 * leadSize,
+                                  0.5 * leadSize,
+                                  0.5 * slitThickness);
+
+    // --- все отверстия объединяем в один G4MultiUnion ---
+    G4MultiUnion* holesUnion = new G4MultiUnion("holesUnion");
+
+    G4Box* solidHole = new G4Box("solidHole",
+                                 0.5 * holeSize,
+                                 0.5 * holeSize,
+                                 0.6 * slitThickness);  // чуть толще, чтобы пробить насквозь
+
+    for (G4int i = 0; i < numSlits; ++i) {
+        for (G4int j = 0; j < numSlits; ++j) {
+            G4double x = startPos + barWidth + 0.5 * holeSize + i * slitPeriod;
+            G4double y = startPos + barWidth + 0.5 * holeSize + j * slitPeriod;
+
+            G4Transform3D tr(G4RotationMatrix(),
+                             G4ThreeVector(x, y, 0.));
+            holesUnion->AddNode(*solidHole, tr);
+        }
+    }
+    holesUnion->Voxelize();   // обязательно после добавления всех узлов
+
+    // --- одно вычитание: пластина минус объединение отверстий ---
+    G4SubtractionSolid* gridSolid = new G4SubtractionSolid(
+        "gridSolid", solidPlate, holesUnion);
+
     G4LogicalVolume* logicLead =
-        new G4LogicalVolume(solidSlit, goldMat, "logicLead");
+        new G4LogicalVolume(gridSolid, goldMat, "logicLead");
 
     G4VisAttributes* leadVisAtt =
         new G4VisAttributes(G4Color(1.0, 0.84, 0.0, 1.0));
     leadVisAtt->SetForceSolid(true);
     logicLead->SetVisAttributes(leadVisAtt);
 
+    // --- ВОТ ЭТИ ДВЕ ПЕРЕМЕННЫЕ НУЖНЫ ДАЛЬШЕ ПО КОДУ ---
     G4double goldPosZ = 0.0;
-    G4double offsetY  = (leadSize - slitLengthY) / 2.0;
+    G4double offsetY  = 0.0;   // сетка центрирована, сдвига нет
 
-    for (G4int i = 0; i < numSlits; ++i) {
-        G4double x = startX + i * slitPeriod;
-        new G4PVPlacement(0, G4ThreeVector(x, offsetY, goldPosZ),
-                          logicLead, "physSlit" + std::to_string(i),
-                          logicWorld, false, i, false);
-    }
+    new G4PVPlacement(0, G4ThreeVector(0., offsetY, goldPosZ),
+                      logicLead, "physGrid",
+                      logicWorld, false, 0, checkOverlaps);
 
     // ========== СЦИНТИЛЛЯТОР YAG(Tb) 6% ==========
     G4double scintThickness = scintillatorThickness;
