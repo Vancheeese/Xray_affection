@@ -1,37 +1,33 @@
 #!/bin/bash
 # Пакетный АНАЛИЗ результатов симуляции из build/results.
 # Для каждой папки толщины (20um, 30um, 40um, ...) выполняет:
-#   analyze_xray_image.py, analyze_snr.py, analyze_edge.py
-# В конце один раз — plot_dependencies.py (общий график по всем толщинам).
+#   xray_image.py  -> michelson.py -> fwhm.py
+# Текстовые файлы с результатами (michelson_results.txt, fwhm_results.txt)
+# сохраняются рядом с xray_image.npz, то есть в тех же папках, где
+# лежит hits_data.csv.
 # Симуляцию НЕ запускает, работает только с существующими hits_data.csv.
 #
 # Устойчив к обрыву SSH: пишет лог в файл. Запускать так:
 #   nohup bash run_batch_analysis.sh > /dev/null 2>&1 &
 #   tail -f logs/analysis_*.log
-# Результаты snr/edge при повторном запуске всегда перезаписываются.
+# Результаты при повторном запуске всегда перезаписываются.
 # Пересчёт одной толщины: ONLY=30um bash run_batch_analysis.sh
 
 set -e
 
-# Защита от SIGHUP: при обрыве SSH терминал рассылает SIGHUP всем процессам
-# своей группы, и скрипт умирает посреди прогона. Игнорируем его — дети
-# (python3) наследуют этот настройк. Остановить вручную: kill -TERM <PID>.
 trap '' HUP
 
-# Определяем пути
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RESULTS_DIR="$PROJECT_DIR/results"
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/analysis_$(date +%Y%m%d_%H%M%S).log"
 
 mkdir -p "$LOG_DIR"
-# Весь вывод (включая вывод python) дублируется в лог-файл
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 START_TIME=$(date +%s)
 echo "Лог: $LOG_FILE"
 
-# Функция для выполнения шага с повтором при ошибке
 run_step() {
     local step_name="$1"
     local command="$2"
@@ -61,23 +57,8 @@ run_step() {
     done
 
     echo "✗✗✗ КРИТИЧЕСКАЯ ОШИБКА: $step_name не выполнен после $max_retries попыток"
-    echo "Останавливаю выполнение. Готовые толщины будут пропущены при следующем запуске."
+    echo "Останавливаю выполнение."
     exit 1
-}
-
-# Признак того, что толщина уже проанализирована: все нужные выходы
-# существуют и новее, чем hits_data.csv. Позволяет продолжить после обрыва.
-# Используется только для статистики: результаты snr и edge при наличии
-# ВСЕГДА пересчитываются и перезаписываются (см. цикл ниже).
-is_done() {
-    local dir="$1"
-    local csv="$dir/hits_data.csv"
-    local f
-    for f in xray_image.png snr_results.txt edge_profile_results.txt; do
-        [ -f "$dir/$f" ] || return 1
-        [ "$dir/$f" -nt "$csv" ] || return 1
-    done
-    return 0
 }
 
 echo "=================================================="
@@ -86,11 +67,10 @@ echo "=================================================="
 
 if [ ! -d "$RESULTS_DIR" ]; then
     echo "Ошибка: папка $RESULTS_DIR не найдена."
-    echo "Сначала выполните симуляцию: bash run_batch_sim_only.sh"
+    echo "Сначала выполните симуляцию."
     exit 1
 fi
 
-# Собираем папки вида <число>um и сортируем по числовому значению толщины
 THICK_DIRS=$(find "$RESULTS_DIR" -mindepth 1 -maxdepth 1 -type d -name '*um' | sort -V)
 
 if [ -z "$THICK_DIRS" ]; then
@@ -98,7 +78,6 @@ if [ -z "$THICK_DIRS" ]; then
     exit 1
 fi
 
-# ONLY=30um — обработать только одну толщину
 if [ -n "$ONLY" ]; then
     THICK_DIRS="$RESULTS_DIR/$ONLY"
     if [ ! -d "$THICK_DIRS" ]; then
@@ -113,6 +92,7 @@ SKIP_COUNT=0
 for THICK_DIR in $THICK_DIRS; do
     THICK_NAME=$(basename "$THICK_DIR")
     CSV="$THICK_DIR/hits_data.csv"
+    NPZ="$THICK_DIR/xray_image.npz"
 
     echo ""
     echo "=================================================="
@@ -125,45 +105,34 @@ for THICK_DIR in $THICK_DIRS; do
         continue
     fi
 
-    # Результаты snr и edge НЕ пропускаем: если старые snr_results.txt /
-    # edge_profile_results.txt уже лежат в папке — перезаписываем их свежими
-    # (анализ идемпотентен, работает по одному и тому же hits_data.csv).
-    if [ -f "$THICK_DIR/snr_results.txt" ] || [ -f "$THICK_DIR/edge_profile_results.txt" ]; then
-        echo "Найдены предыдущие результаты SNR/edge в $THICK_NAME — перезаписываю"
+    if [ -f "$THICK_DIR/michelson_results.txt" ] || [ -f "$THICK_DIR/fwhm_results.txt" ]; then
+        echo "Найдены предыдущие результаты в $THICK_NAME — перезаписываю"
     fi
 
     # Подчищаем временные файлы после прерванного запуска
-    rm -f "$CSV.tmp.npy"
+    rm -f "$CSV.tmp.txt"
 
-    # python3 -u: небуферизованный вывод, чтобы лог заполнялся по ходу дела
-    # 1. Рентгеновское изображение
+    # 1. Построение рентгеновского изображения (даёт xray_image.npz и .png)
     run_step "Построение изображения ($THICK_NAME)" \
-        "cd $PROJECT_DIR && python3 -u analyze_xray_image.py $CSV"
+        "cd $PROJECT_DIR && python3 -u xray_image.py $CSV"
 
-    # 2. Оценка SNR + маска
-    run_step "Оценка SNR ($THICK_NAME)" \
-        "cd $PROJECT_DIR && python3 -u analyze_snr.py $CSV"
+    # Проверка, что npz действительно создался
+    if [ ! -f "$NPZ" ]; then
+        echo "✗✗✗ КРИТИЧЕСКАЯ ОШИБКА: $NPZ не создан шагом xray_image.py"
+        exit 1
+    fi
 
-    # 3. Анализ края (профиль + erf + FWHM)
-    run_step "Анализ края ($THICK_NAME)" \
-        "cd $PROJECT_DIR && python3 -u analyze_edge.py $CSV"
+    # 2. Контраст Михельсона (пишет michelson_results.txt рядом с npz)
+    run_step "Контраст Михельсона ($THICK_NAME)" \
+        "cd $PROJECT_DIR && python3 -u michelson.py $NPZ"
+
+    # 3. FWHM (пишет fwhm_results.txt рядом с npz)
+    run_step "FWHM ($THICK_NAME)" \
+        "cd $PROJECT_DIR && python3 -u fwhm.py $NPZ"
 
     DONE_COUNT=$((DONE_COUNT + 1))
     echo "[$(date +%H:%M:%S)] ✓ Анализ $THICK_NAME завершён, результаты в: $THICK_DIR"
 done
-
-# 4. Итоговые графики зависимостей FWHM/SNR от толщины (по всем папкам сразу)
-echo ""
-echo "=================================================="
-echo "ПОСТРОЕНИЕ ГРАФИКОВ ЗАВИСИМОСТЕЙ"
-echo "=================================================="
-if [ -f "$PROJECT_DIR/plot_dependencies.py" ]; then
-    run_step "Графики зависимостей" "cd $PROJECT_DIR && python3 plot_dependencies.py"
-    PLOT_RESULT="$PROJECT_DIR/resolution_vs_thickness.png"
-else
-    echo "Пропущено: $PROJECT_DIR/plot_dependencies.py не найден"
-    PLOT_RESULT="не построен (plot_dependencies.py отсутствует)"
-fi
 
 echo ""
 echo "=================================================="
@@ -171,6 +140,5 @@ echo "✓ АНАЛИЗ ВСЕХ ТОЛЩИН ЗАВЕРШЁН!"
 echo "Просчитано: $DONE_COUNT, пропущено: $SKIP_COUNT"
 echo "Время: $(( ($(date +%s) - START_TIME) / 60 )) мин"
 echo "Результаты в папке: $RESULTS_DIR"
-echo "График зависимостей: $PLOT_RESULT"
 echo "Лог: $LOG_FILE"
 echo "=================================================="
