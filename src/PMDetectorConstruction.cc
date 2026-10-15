@@ -178,32 +178,40 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     scintAirSurface->SetPolish(1.0);
     new G4LogicalSkinSurface("Scint_skin", logicScintillator, scintAirSurface);
 
-    // ========== ОПТИЧЕСКАЯ СИСТЕМА (РЕАЛЬНАЯ ЛИНЗА) ==========
+        // ========== ОПТИЧЕСКАЯ СИСТЕМА (РЕАЛЬНАЯ ЛИНЗА) ==========
     //
-    // Тонкая линза:
-    //   1/f = 1/u + 1/v,   M = v/u
-    //   =>  f = u*M/(M+1), v = u*M
+    // Тонкая линза: 1/f = 1/u + 1/v,   M = v/u
+    //   => f = u*M/(M+1), v = u*M
+    // Двояковыпуклая линза: 1/f = 2(n-1)/R  =>  R = 2(n-1) f
+    // DOF ≈ λ/NA², NA ≈ r_a/u, r_a ≈ sqrt(R*t)
     //
-    // Двояковыпуклая линза с радиусами R:
-    //   1/f = 2(n-1)/R  =>  R = 2(n-1) f
-    //
-    // Глубина резкости (Rayleigh):
-    //   DOF ≈ λ / NA²,   NA ≈ r_aperture / u
-    //   => r_aperture = u * sqrt(λ / DOF)
-    //
-    // Для двояковыпуклой линзы центр. толщина t и апертура r_a связаны:
-    //   r_a ≈ sqrt(R * t)
-    //   => t ≈ r_a² / R
-    //
-    // Итог: при λ ≈ 550 нм, DOF = 0.3 мм, u ≈ 15 мм, M = 2.7:
-    //   NA ≈ 0.043, r_a ≈ 0.64 мм, R ≈ 10.06 мм, t ≈ 40 мкм.
+    // Фокусировка:
+    //   Геометрия объектива (f, v, R) фиксируется по реперной конфигурации —
+    //   фокус в ЦЕНТРЕ сцинтиллятора, линза на lensPlaneZ.
+    //   Затем вся камера (линза + детектор) сдвигается вдоль Z так, чтобы
+    //   фокальная плоскость попала на заданную глубину focusDepthFromBack.
 
     G4double M = lensMagnification;
-    G4double u = lensPlaneZ - scintPosZ;    // сцинтиллятор → центр линзы
-    G4double f = u * M / (M + 1.0);         // фокусное расстояние
-    G4double v = u * M;                     // центр линзы → плоскость изображения
 
-    lensFocalLength = f;                    // обновим глобальную переменную
+    // Задняя (обращённая к золоту) поверхность сцинтиллятора
+    G4double scintBackZ   = goldPosZ + slitThickness / 2.0;
+    G4double scintCenterZ = scintBackZ + scintThickness / 2.0;
+
+    // Положение фокальной плоскости в мире
+    G4double focusZ = scintBackZ + focusDepthFromBack;
+
+    // Реперная конфигурация: фокус в центре сцинтиллятора, линза на lensPlaneZ.
+    // Из неё считаются фиксированные свойства объектива (f, v).
+    G4double u_ref = lensPlaneZ - scintCenterZ;
+    G4double f     = u_ref * M / (M + 1.0);
+    G4double v     = u_ref * M;
+
+    // Фактическое положение линзы: фокус на focusZ → линза на focusZ + u_ref.
+    // Детектор едет вместе с линзой.
+    G4double lensZ     = focusZ + u_ref;
+    G4double detectorZ = lensZ + v;
+
+    lensFocalLength = f;
 
     // --- материал линзы (плавленый кварц SiO2) ---
     G4Material* lensMat = nist->FindOrBuildMaterial("G4_SILICON_DIOXIDE");
@@ -220,7 +228,7 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     lensMPT->AddProperty("ABSLENGTH", lensE, lensAbs, nLensE);
     lensMat->SetMaterialPropertiesTable(lensMPT);
 
-     // --- геометрия линзы ---
+    // --- геометрия линзы (фиксирована по реперной конфигурации) ---
     G4double n_lens = lensRefractiveIndex;
     G4double R_lens = 2.0 * (n_lens - 1.0) * f;   // ≈ 10.06 мм
     G4double t_lens = lensCenterThickness;        // ≈ 40 мкм
@@ -228,9 +236,6 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     lensCurvatureRadius = R_lens;
     lensRadius          = std::sqrt(R_lens * t_lens);  // ≈ 0.63 мм
 
-    // Центры двух сфер в системе линзы (центр линзы в z = 0):
-    //   передняя сфера: z_f = t/2 - R
-    //   задняя  сфера: z_b = R - t/2
     G4double z_f = t_lens / 2.0 - R_lens;
     G4double z_b = R_lens - t_lens / 2.0;
 
@@ -239,8 +244,6 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     G4Sphere* sph_b = new G4Sphere("sph_b", 0., R_lens,
                                    0., 360. * deg, 0., 180. * deg);
 
-    // Пересечение двух сфер → форма двояковыпуклой линзы.
-    // В Geant4 11.3.2 у 4-арг. версии НЕТ флага checkOverlaps.
     G4Transform3D trans_b(G4RotationMatrix(),
                           G4ThreeVector(0., 0., z_b - z_f));
     G4IntersectionSolid* lens_solid = new G4IntersectionSolid(
@@ -248,12 +251,9 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
 
     logicLens = new G4LogicalVolume(lens_solid, lensMat, "logicLens");
 
-    // Центр полученного solid'а в локальной системе sph_f находится
-    // в точке z_local = (0 + (z_b - z_f)) / 2 = (z_b - z_f)/2.
-    // Чтобы центр линзы оказался в мировом z = lensPlaneZ, смещаем
-    // placement на -z_local:
+    // Смещение сампла линзы: центр линзы должен оказаться в lensZ
     G4double z_local_center = (z_b - z_f) / 2.0;
-    G4ThreeVector lensPos(0., offsetY, lensPlaneZ - z_local_center);
+    G4ThreeVector lensPos(0., offsetY, lensZ - z_local_center);
     new G4PVPlacement(0, lensPos, logicLens, "physLens",
                       logicWorld, false, 50, checkOverlaps);
 
@@ -262,7 +262,6 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     lensVisAtt->SetForceSolid(true);
     logicLens->SetVisAttributes(lensVisAtt);
 
-    // Оптическая поверхность линзы: диэлектрик–диэлектрик, полированная
     G4OpticalSurface* lensSurface = new G4OpticalSurface("LensSurface");
     lensSurface->SetType(dielectric_dielectric);
     lensSurface->SetModel(unified);
@@ -292,8 +291,8 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
                                      0.5 * detectorThickness);
     logicDetector = new G4LogicalVolume(solidDetector, siMat, "logicDetector");
 
-    G4double detectorPosZ = lensPlaneZ + v;
-    new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, detectorPosZ),
+    // Детектор едет вместе с линзой: detectorZ = lensZ + v
+    new G4PVPlacement(0, G4ThreeVector(0. * m, offsetY, detectorZ),
                       logicDetector, "physDetector",
                       logicWorld, false, 1, false);
 
@@ -310,17 +309,21 @@ G4VPhysicalVolume* PMDetectorConstruction::Construct()
     logicDetector->SetVisAttributes(siVisAtt);
 
     // ========== ОТЛАДОЧНЫЙ ВЫВОД ==========
-    G4cout << "\n=== Оптическая система (реальная линза) ===" << G4endl;
+    G4cout << "\n=== Оптическая система (фокусировка по глубине) ===" << G4endl;
     G4cout << "M  = " << M << G4endl;
-    G4cout << "u  = " << u / mm << " мм" << G4endl;
-    G4cout << "v  = " << v / mm << " мм" << G4endl;
+    G4cout << "u_ref (фокус-линза) = " << u_ref / mm << " мм" << G4endl;
+    G4cout << "v     (линза-детектор) = " << v / mm << " мм" << G4endl;
     G4cout << "f  = " << f / mm << " мм" << G4endl;
     G4cout << "R  = " << R_lens / mm << " мм" << G4endl;
     G4cout << "t  = " << t_lens / um << " мкм" << G4endl;
     G4cout << "r_a≈ " << lensRadius / mm << " мм" << G4endl;
-    G4cout << "z_scint = " << scintPosZ / mm
-           << " мм, z_lens = " << lensPlaneZ / mm
-           << " мм, z_det = " << detectorPosZ / mm << " мм" << G4endl;
+    G4cout << "scint back = " << scintBackZ / um << " мкм, "
+           << "center = " << scintCenterZ / um << " мкм, "
+           << "focus plane = " << focusZ / um << " мкм "
+           << "(глубина от задней поверхности: "
+           << focusDepthFromBack / um << " мкм)" << G4endl;
+    G4cout << "z_lens = " << lensZ / mm << " мм, "
+           << "z_det = " << detectorZ / mm << " мм" << G4endl;
     G4cout << "==========================================\n" << G4endl;
 
     return physWorld;

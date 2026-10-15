@@ -45,4 +45,6 @@ extern G4double lensRefractiveIndex;
 // из пересечения двух сферических поверхностей)
 extern G4double lensRadius;         // мм
 
+extern G4double focusDepthFromBack;
+
 #endif

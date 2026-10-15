@@ -15,3 +15,6 @@ G4double lensCurvatureRadius = 10.06 * mm;       // R = 2(n-1)f
 G4double lensCenterThickness = 40.0 * um;        // под DOF ≈ 0.3 мм
 G4double lensRefractiveIndex = 1.46;             // SiO2 (плавленый кварц)
 G4double lensRadius          = 0.64 * mm;        // оценка апертуры ≈ sqrt(R*t)
+// ===== Фокусировка по глубине сцинтиллятора =====
+// По умолчанию — центр (для 1200 мкм это 600 мкм).
+G4double focusDepthFromBack = 600.0 * um;
