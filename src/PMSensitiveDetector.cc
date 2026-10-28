@@ -18,7 +18,7 @@ PMSensitiveDetector::PMSensitiveDetector(G4String name)
     if (!fileOpened) {
         outFile.open("hits_data.csv");
         if (outFile.is_open()) {
-            outFile << "Energy_eV	PosX_um	PosY_um	Type	EventID\n";
+            outFile << "Energy_eV\tPosX_um\tPosY_um\tType\tEventID\tVertexZ_um\n";
             G4cout << "File hits_data.csv opened successfully" << G4endl;
         }
         else {
@@ -56,13 +56,17 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
     G4ThreeVector hitPos = postStepPoint->GetPosition();
 
+    G4ThreeVector vertexPos = track->GetVertexPosition();
+    G4double vertexZ = vertexPos.z() / um;
+
     if (outFile.is_open()) {
         G4AutoLock lock(&closeMutex);
         outFile << energy << "	"
             << hitPos.x() / um << "	"
             << hitPos.y() / um << "	"
             << particleName << "	"
-            << eventID
+            << eventID << "	"
+             << vertexZ    
             << "\n";
     }
 

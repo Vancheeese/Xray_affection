@@ -13,37 +13,30 @@ extern G4int gridSize;
 // Ширина и толщина золотых полосок (по умолчанию 30 мкм)
 extern G4double slitWidth;
 
-// Энергия рентгеновского излучения (по умолчанию 8 кэВ)
+// Энергия рентгеновского излучения для ИДЕАЛЬНОГО источника
+// (используется только если useRealisticSpectrum = false)
 extern G4double initialEnergy;
 
-// Количество частиц на пиксель (по умолчанию 200)
+// Количество частиц на пиксель (по умолчанию 10)
 extern G4int particlesPerPixel;
 
 // Толщина сцинтиллятора (по умолчанию 30 мкм)
 extern G4double scintillatorThickness;
 
+// ===== Параметры источника излучения =====
+// true  — реалистичный спектр Mo-анода (Brems + Kα + Kβ),
+//         см. PMPrimaryGenerator::SampleMolybdenumEnergy()
+// false — идеальный монохроматический источник с энергией initialEnergy
+extern G4bool useRealisticSpectrum;
+
 // ===== Параметры оптической системы (объектива) =====
-// Увеличение (задаётся пользователем)
-extern G4double lensMagnification;  // 2.7
-
-// Фокусное расстояние (рассчитывается в PMDetectorConstruction::Construct())
-extern G4double lensFocalLength;    // мм
-
-// Положение плоскости линзы (центр линзы) вдоль оси Z
-extern G4double lensPlaneZ;         // мм
-
-// Радиус кривизны поверхностей линзы
+extern G4double lensMagnification;   // 2.7
+extern G4double lensFocalLength;     // мм
+extern G4double lensPlaneZ;          // мм
 extern G4double lensCurvatureRadius; // мм
-
-// Толщина линзы по центру
 extern G4double lensCenterThickness; // мкм
-
-// Показатель преломления материала линзы
 extern G4double lensRefractiveIndex;
-
-// Расчётный радиус апертуры (информационно; реальная апертура —
-// из пересечения двух сферических поверхностей)
-extern G4double lensRadius;         // мм
+extern G4double lensRadius;          // мм
 
 extern G4double focusDepthFromBack;
 

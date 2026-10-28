@@ -22,15 +22,19 @@ public:
 
 private:
     G4ParticleGun *fParticleGun;
-    
+
+    // Выборка энергии из реалистичного спектра Mo-анода.
+    // Реализация — в PMPrimaryGenerator.cc.
+    G4double SampleMolybdenumEnergy();
+
     // Global pixel position for thread synchronization
-    static std::atomic<G4int> fGlobalPixelX;
-    static std::atomic<G4int> fGlobalPixelY;
-    static std::atomic<G4int> fParticlesEmittedInCurrentPixel;
-    static const G4int fParticlesPerPixel;
-    static const G4int fGridSize;
+    static std::atomic<G4int>  fGlobalPixelX;
+    static std::atomic<G4int>  fGlobalPixelY;
+    static std::atomic<G4int>  fParticlesEmittedInCurrentPixel;
+    static const G4int         fParticlesPerPixel;   // не используется, оставлено для совместимости
+    static const G4int         fGridSize;            // не используется, оставлено для совместимости
     static std::atomic<G4bool> fIsFinished;
-    
+
     G4int GetCurrentPixelX();
     G4int GetCurrentPixelY();
 };
