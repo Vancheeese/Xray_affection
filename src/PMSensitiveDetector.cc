@@ -56,17 +56,13 @@ G4bool PMSensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     G4StepPoint* postStepPoint = aStep->GetPostStepPoint();
     G4ThreeVector hitPos = postStepPoint->GetPosition();
 
-    G4ThreeVector vertexPos = track->GetVertexPosition();
-    G4double vertexZ = vertexPos.z() / um;
-
     if (outFile.is_open()) {
         G4AutoLock lock(&closeMutex);
         outFile << energy << "	"
             << hitPos.x() / um << "	"
             << hitPos.y() / um << "	"
             << particleName << "	"
-            << eventID << "	"
-             << vertexZ    
+            << eventID
             << "\n";
     }
 
